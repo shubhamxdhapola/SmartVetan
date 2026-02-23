@@ -5,6 +5,7 @@ import cors from 'cors'
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/employer.auth.routes.js'
 import employeeRoutes from './routes/employee.routes.js'
+import uploadRoutes from './routes/upload.routes.js'
 import { authenticate } from './middlewares/authenticate.js';
 
 const app = express();
@@ -20,6 +21,7 @@ app.use(cors({
 
 app.use('/api/auth', authRoutes)
 app.use('/api/employee', authenticate, employeeRoutes)
+app.use('/api/upload', uploadRoutes)
 
 app.listen(PORT, async () => {
     await connectDB()

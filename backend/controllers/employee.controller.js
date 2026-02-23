@@ -2,8 +2,9 @@ import Employee from "../models/employee.model.js";
 
 export const getEmployees = async (req, res) => {
     try {
-        const id = req.params.id;
-        let employees = await Employee.find({ employeeId: id })
+        let employees = await Employee.find({
+            employerId: req.employer._id
+        })
         return res.status(200).json({ employees })
     } catch (error) {
         console.log("Error in getEmployees controller : ", error)
@@ -15,16 +16,16 @@ export const addEmployee = async (req, res) => {
     try {
         const { name, phone, email, address, aadhar, salary, profilePic } = req.body;
 
-        if (!name.trim() || !phone.trim() || !aadhar.trim()) {
+        if (!name || !phone || !aadhar) {
             return res.status(400).json({ message: "Name, phone and aadhar are required" });
         }
 
+        const conditions = [{ phone }, { aadhar }];
+        if (email) conditions.push({ email });
+
         let employee = await Employee.findOne({
-            $or: [
-                { phone }, 
-                { email }, 
-                { aadhar }
-            ]
+            employerId: req.employer._id,
+            $or: conditions
         })
 
         if (employee) {
@@ -60,6 +61,24 @@ export const updateEmployee = async (req, res) => {
 
         const updates = {}
 
+        let employee = await Employee.findOne({
+            employerId: req.employer._id,
+            _id: { $ne: employeeId },
+            $or: [
+                { phone },
+                { email },
+            ]
+        })
+
+        if (employee) {
+            if (employee.phone === phone) {
+                return res.status(400).json({ message: "Phone number already registered" })
+            }
+            if (employee.email === email) {
+                return res.status(400).json({ message: "Email already registered" })
+            }
+        }
+
         if (name) updates.name = name;
         if (phone) updates.phone = phone
         if (email) updates.email = email
@@ -68,11 +87,12 @@ export const updateEmployee = async (req, res) => {
         if (profilePic || profilePic == null) updates.profilePic = profilePic
 
         const updatedEmployee = await Employee.findByIdAndUpdate(
-            employeeId, updates,
+            { employerId: req.employer._id, _id: employeeId, },
+            updates,
             { runValidators: true, new: true }
         )
 
-        return res.status(201).json({
+        return res.status(200).json({
             updatedEmployee, message: "Employee updated successfully"
         })
     } catch (error) {
@@ -84,7 +104,9 @@ export const updateEmployee = async (req, res) => {
 export const deleteEmployee = async (req, res) => {
     try {
         const employeeId = req.params.id;
-        const employee = await findByIdAndDelete(employeeId)
+        const employee = await Employee.findByIdAndDelete({ 
+            employerId: req.employer._id, employeeId 
+        })
         if (!employee) {
             return res.status(404).json({ message: "Employee not found" })
         }
