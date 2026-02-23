@@ -28,6 +28,10 @@ const employerSchema = mongoose.Schema({
         type: String,
         enum: ['local', 'google', 'facebook'],
         default: 'local'
+    },
+
+    firebaseUid: {
+        type: String
     }
 }, { timestamps: true })
 
