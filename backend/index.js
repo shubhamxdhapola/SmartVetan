@@ -3,7 +3,9 @@ import connectDB from './config/db.js';
 import 'dotenv/config'
 import cors from 'cors'
 import cookieParser from 'cookie-parser';
-import authRoutes from './routes/auth.routes.js'
+import authRoutes from './routes/employer.auth.routes.js'
+import employeeRoutes from './routes/employee.routes.js'
+import { authenticate } from './middlewares/authenticate.js';
 
 const app = express();
 const PORT = process.env.PORT
@@ -16,7 +18,8 @@ app.use(cors({
     credentials: true
 }))
 
-app.use('/api/auth/', authRoutes)
+app.use('/api/auth', authRoutes)
+app.use('/api/employee', authenticate, employeeRoutes)
 
 app.listen(PORT, async () => {
     await connectDB()

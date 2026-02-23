@@ -1,7 +1,7 @@
 import express from 'express'
 import {
     facebookLogin, getEmployerInfo, googleLogin, loginEmployer, logoutEmployer, registerEmployer
-} from '../controllers/auth.controller.js'
+} from '../controllers/employer.auth.controller.js'
 import { authenticate } from '../middlewares/authenticate.js'
 
 const router = express.Router()
