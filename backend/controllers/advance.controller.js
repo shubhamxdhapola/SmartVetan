@@ -1,0 +1,94 @@
+import Advance from "../models/advance.model.js";
+
+export const getAdvances = async (req, res) => {
+    try {
+        const employerId = req.employer._id;
+        const advances = await Advance.find({ employerId }).sort({ date: -1 })
+        return res.status(200).json({ advances })
+    } catch (error) {
+        console.log("Error in getAdvances controller : ", error)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const getEmployeeAdvances = async (req, res) => {
+    try {
+        const employerId = req.employer._id;
+        const employeeId = req.params.employeeId;
+        const advances = await Advance.find({ employeeId, employerId })
+        return res.status(200).json({ advances })
+    } catch (error) {
+        console.log("Error in getEmployeeAdvances controller : ", error)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const addAdvance = async (req, res) => {
+    try {
+        const employerId = req.employer._id
+        const employeeId = req.params.employeeId
+
+        const { amount, note, date } = req.body
+
+        if (!amount || !employeeId || !employerId) {
+            return res.status(400).json({
+                message: "Amount, employeeId or employerId are required"
+            })
+        }
+
+        let advance = await Advance.create({
+            employerId, employeeId, amount, note, date
+        })
+
+        return res.status(201).json({
+            advance, message: "Advance added successfully"
+        })
+
+    } catch (error) {
+        console.log("Error in addAdvance controller : ", error)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const updateAdvance = async (req, res) => {
+    try {
+        const id = req.params.advanceId
+        const employerId = req.employer._id
+        const { amount, note, date } = req.body
+
+        const updates = {}
+        if (amount) updates.amount = amount
+        if (note) updates.note = note
+        if (date) updates.date = date
+
+        const updatedAdvance = await Advance.findOneAndUpdate(
+            { _id: id, employerId },
+            updates,
+            { runValidators: true, new: true }
+        )
+
+        return res.status(200).json({
+            updatedAdvance, message: "Advance updated successfully"
+        })
+
+    } catch (error) {
+        console.log("Error in updateAdvance controller : ", error)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const deleteAdvance = async (req, res) => {
+    try {
+        const id = req.params.advanceId
+        const employerId = req.employer._id
+
+        const advance = await Advance.findOneAndDelete({ _id: id, employerId })
+        if (!advance) {
+            return res.status(400).json({ message: "Advance not exists" })
+        }
+        return res.status(200).json({ message: "Advance deleted successfully" })
+    } catch (error) {
+        console.log("Error in deleteAdvance controller : ", error)
+        return res.status(500).json({ messge: "Internal sever error" })
+    }
+}

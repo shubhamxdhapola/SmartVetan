@@ -56,7 +56,7 @@ export const addEmployee = async (req, res) => {
 
 export const updateEmployee = async (req, res) => {
     try {
-        const employeeId = req.params.id;
+        const employeeId = req.params.employeeId;
         const { name, phone, email, address, salary, profilePic } = req.body;
 
         const updates = {}
@@ -86,8 +86,8 @@ export const updateEmployee = async (req, res) => {
         if (salary) updates.salary = salary
         if (profilePic || profilePic == null) updates.profilePic = profilePic
 
-        const updatedEmployee = await Employee.findByIdAndUpdate(
-            { employerId: req.employer._id, _id: employeeId, },
+        const updatedEmployee = await Employee.findOneAndUpdate(
+            { _id: employeeId, employerId: req.employer._id },
             updates,
             { runValidators: true, new: true }
         )
@@ -103,9 +103,9 @@ export const updateEmployee = async (req, res) => {
 
 export const deleteEmployee = async (req, res) => {
     try {
-        const employeeId = req.params.id;
-        const employee = await Employee.findByIdAndDelete({ 
-            employerId: req.employer._id, employeeId 
+        const employeeId = req.params.employeeId;
+        const employee = await Employee.findOneAndDelete({
+            _id: employeeId, employerId: req.employer._id
         })
         if (!employee) {
             return res.status(404).json({ message: "Employee not found" })
