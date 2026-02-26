@@ -1,11 +1,12 @@
-import express from 'express'
-import connectDB from './config/db.js';
 import 'dotenv/config'
 import cors from 'cors'
+import express from 'express'
+import connectDB from './config/db.js';
 import cookieParser from 'cookie-parser';
 import authRoutes from './routes/employer.auth.routes.js'
 import employeeRoutes from './routes/employee.routes.js'
 import uploadRoutes from './routes/upload.routes.js'
+import salaryRecordsRoutes from './routes/salary.records.routes.js'
 import advanceRoutes from './routes/advance.routes.js'
 import { authenticate } from './middlewares/authenticate.js';
 
@@ -24,6 +25,7 @@ app.use('/api/auth', authRoutes)
 app.use('/api/upload', uploadRoutes)
 app.use('/api/employee', authenticate, employeeRoutes)
 app.use('/api/advance', authenticate, advanceRoutes)
+app.use('/api/salary', authenticate, salaryRecordsRoutes);
 
 app.listen(PORT, async () => {
     await connectDB()

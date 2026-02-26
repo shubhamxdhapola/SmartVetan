@@ -1,5 +1,5 @@
 import express from 'express'
-import { addAdvance, deleteAdvance, getAdvances, getEmployeeAdvances, updateAdvance } from '../controllers/advance.controller.js'
+import { deleteAdvance, getAdvances, updateAdvance } from '../controllers/advance.controller.js'
 
 const router = express.Router()
 
