@@ -1,13 +1,16 @@
 import Advance from '../models/advance.model.js';
 import Employee from '../models/employee.model.js'
-import SalaryRecord from '../models/salary.records.model.js';
+import SalaryRecord from '../models/salary.record.model.js';
 import mongoose from 'mongoose';
 
 export const generateSalary = async (req, res) => {
     try {
-
         const employeeId = req.params.employeeId;
         const employerId = req.employer._id;
+
+        if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+            return res.status(400).json({ message: "Invalid employee id" });
+        }
 
         const { month } = req.body;
 
@@ -85,6 +88,66 @@ export const generateSalary = async (req, res) => {
 
     } catch (error) {
         console.log("Error in generateSalary controller : ", error)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const markSalaryAsPaid = async (req, res) => {
+    try {
+
+        const { salaryId } = req.params;
+        const employerId = req.employer._id;
+
+        if (!mongoose.Types.ObjectId.isValid(salaryId)) {
+            return res.status(400).json({ message: "Invalid salary id" });
+        }
+
+        const updatedSalary = await SalaryRecord.findOneAndUpdate(
+            { _id: salaryId, employerId, status: { $ne: "Paid" } },
+            { status: "Paid", paidDate: new Date() },
+            { runValidators: true, new: true }
+        )
+
+        if (!updatedSalary) {
+            return res.status(404).json({ message: "Salary not found or already paid" })
+        }
+
+        return res.status(200).json({
+            salaryRecord: updatedSalary,
+            message: "Salary mark as paid successfully"
+        })
+
+    } catch (error) {
+        console.log("Error in markSalaryAsPaid controller : ", error)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const getEmployeeSalaryHistory = async (req, res) => {
+    try {
+
+        const { employeeId } = req.params;
+        const employerId = req.employer._id;
+
+        if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+            return res.status(400).json({ message: "Invalid employee id" });
+        }
+
+        const employee = await Employee.findOne({ _id: employeeId, employerId })
+
+        if (!employee) {
+            return res.status(404).json({ message: "Employee not found" })
+        }
+
+        const salaryRecords = await SalaryRecord.find(
+            { employeeId, employerId },
+            { employeeId: 0, employerId: 0 }
+        ).sort({ month: -1 })
+
+        return res.status(200).json({ salaryRecords })
+
+    } catch (error) {
+        console.log("Error in getEmployeeSalaryHistory controller : ", error)
         return res.status(500).json({ message: "Internal server error" })
     }
 }

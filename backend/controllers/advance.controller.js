@@ -15,8 +15,14 @@ export const getEmployeeAdvances = async (req, res) => {
     try {
         const employerId = req.employer._id;
         const employeeId = req.params.employeeId;
+
+        if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+            return res.status(400).json({ message: "Invalid employee id" });
+        }
+
         const advances = await Advance.find({ employeeId, employerId })
         return res.status(200).json({ advances })
+        
     } catch (error) {
         console.log("Error in getEmployeeAdvances controller : ", error)
         return res.status(500).json({ message: "Internal server error" })
@@ -29,6 +35,10 @@ export const addAdvance = async (req, res) => {
         const employeeId = req.params.employeeId
 
         const { amount, note, date } = req.body
+
+        if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+            return res.status(400).json({ message: "Invalid employee id" });
+        }
 
         if (!amount || !employeeId || !employerId) {
             return res.status(400).json({
@@ -56,6 +66,10 @@ export const updateAdvance = async (req, res) => {
         const employerId = req.employer._id
         const { amount, note, date } = req.body
 
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid advance id" });
+        }
+
         const updates = {}
         if (amount) updates.amount = amount
         if (note) updates.note = note
@@ -81,6 +95,10 @@ export const deleteAdvance = async (req, res) => {
     try {
         const id = req.params.advanceId
         const employerId = req.employer._id
+
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ message: "Invalid advance id" });
+        }
 
         const advance = await Advance.findOneAndDelete({ _id: id, employerId })
         if (!advance) {

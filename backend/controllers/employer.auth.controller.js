@@ -82,7 +82,7 @@ export const loginEmployer = async (req, res) => {
                 message: "Registered successfully"
             })
         } else {
-            return res.status(500).json({ message: "Unable to register" })
+            return res.status(500).json({ message: "Unable to login" })
         }
     } catch (error) {
         console.log("Error in loginEmployer controller : ", error)

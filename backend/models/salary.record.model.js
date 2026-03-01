@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const salaryRecordSchema = mongoose.Schema({
-
+    
     employeeId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Employee",
@@ -43,4 +43,5 @@ const salaryRecordSchema = mongoose.Schema({
 }, { timestamps: true })
 
 const SalaryRecord = mongoose.model('SalaryRecord', salaryRecordSchema)
+
 export default SalaryRecord;

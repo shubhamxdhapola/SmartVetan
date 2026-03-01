@@ -59,6 +59,10 @@ export const updateEmployee = async (req, res) => {
         const employeeId = req.params.employeeId;
         const { name, phone, email, address, salary, profilePic } = req.body;
 
+        if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+            return res.status(400).json({ message: "Invalid employee id" });
+        }
+
         const updates = {}
 
         let employee = await Employee.findOne({
@@ -104,6 +108,11 @@ export const updateEmployee = async (req, res) => {
 export const deleteEmployee = async (req, res) => {
     try {
         const employeeId = req.params.employeeId;
+
+        if (!mongoose.Types.ObjectId.isValid(employeeId)) {
+            return res.status(400).json({ message: "Invalid employee id" });
+        }
+        
         const employee = await Employee.findOneAndDelete({
             _id: employeeId, employerId: req.employer._id
         })
