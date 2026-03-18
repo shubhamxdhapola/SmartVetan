@@ -8,6 +8,7 @@ import employeeRoutes from './routes/employee.routes.js'
 import uploadRoutes from './routes/upload.routes.js'
 import salaryRecordsRoutes from './routes/salary.records.routes.js'
 import advanceRoutes from './routes/advance.routes.js'
+import dashboardRoutes from './routes/dashboard.route.js'
 import { authenticate } from './middlewares/authenticate.js';
 
 const app = express();
@@ -26,6 +27,7 @@ app.use('/api/upload', uploadRoutes)
 app.use('/api/employee', authenticate, employeeRoutes)
 app.use('/api/advance', authenticate, advanceRoutes)
 app.use('/api/salary', authenticate, salaryRecordsRoutes);
+app.use('/api/dashboard', authenticate, dashboardRoutes)
 
 app.listen(PORT, async () => {
     await connectDB()

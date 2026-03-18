@@ -7,5 +7,4 @@ router.post('/generate/:employeeId', generateSalary)
 router.patch('/:salaryId/pay', markSalaryAsPaid)
 router.get('/employee/:employeeId', getEmployeeSalaryHistory)
 
-
 export default router;
