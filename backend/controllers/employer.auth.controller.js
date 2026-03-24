@@ -79,7 +79,7 @@ export const loginEmployer = async (req, res) => {
                     organization: employer.organization,
                     createdAt: employer.createdAt
                 },
-                message: "Registered successfully"
+                message: "Logged in successfully"
             })
         } else {
             return res.status(500).json({ message: "Unable to login" })

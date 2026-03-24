@@ -1,8 +1,12 @@
-function App() {
+import { RouterProvider } from "react-router-dom";
+import {Toaster} from 'sonner'
+import router from "./router/router";
 
+function App() {
   return (
     <>
-      <h1 class="text-3xl font-bold underline text-green-300">Hello world!</h1>
+      <Toaster />
+      <RouterProvider router={router} />
     </>
   );
 }
