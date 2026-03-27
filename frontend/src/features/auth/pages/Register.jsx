@@ -1,10 +1,15 @@
 import { useState } from "react";
 import Input from "../../../components/common/Input";
 import { validateRegisterForm } from "../../../utils/helper";
-import { registerEmployer } from "../../../store/slices/auth.slice";
+import {
+  googleSignin,
+  registerEmployer,
+} from "../../../store/slices/auth.slice";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "sonner";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../../config/firebase";
 
 const Register = () => {
   const defaultFormData = {
@@ -18,6 +23,20 @@ const Register = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.auth);
+
+  const handleGoogleSignin = async () => {
+    const response = await signInWithPopup(auth, googleProvider);
+    const token = await response?.user?.getIdToken();
+    dispatch(googleSignin(token))
+      .unwrap()
+      .then((res) => {
+        toast.success(res?.message);
+        navigate("/dashboard");
+      })
+      .catch((err) => {
+        toast.error(err?.message);
+      });
+  };
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
@@ -83,6 +102,11 @@ const Register = () => {
         />
         <button type="submit">Register</button>
       </form>
+      <br />
+      <button onClick={handleGoogleSignin}>Google</button>
+      <div>
+        <Link to="/login">Login</Link>
+      </div>
     </div>
   );
 };

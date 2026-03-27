@@ -1,3 +1,4 @@
+import admin from "../config/firebase-admin.js";
 import Employer from "../models/employer.model.js";
 import generateToken from "../utils/generateToken.js";
 import saveCookie from "../utils/saveCookie.js";
@@ -5,7 +6,7 @@ import saveCookie from "../utils/saveCookie.js";
 export const registerEmployer = async (req, res) => {
     try {
         const {
-            name, email, password, profilePic, organization
+            name, email, password, profileImage, organization
         } = req.body;
 
         if (!name || !email || !password) {
@@ -19,7 +20,7 @@ export const registerEmployer = async (req, res) => {
         }
 
         const newEmployer = await Employer.create({
-            name, email, password, profilePic, organization
+            name, email, password, profileImage, organization
         })
 
         if (newEmployer) {
@@ -31,7 +32,7 @@ export const registerEmployer = async (req, res) => {
                     id: newEmployer._id,
                     name: newEmployer.name,
                     email: newEmployer.email,
-                    profilePic: newEmployer.profilePic,
+                    profileImage: newEmployer.profileImage,
                     organization: newEmployer.organization,
                     createdAt: newEmployer.createdAt
                 },
@@ -75,7 +76,7 @@ export const loginEmployer = async (req, res) => {
                     id: employer._id,
                     name: employer.name,
                     email: employer.email,
-                    profilePic: employer.profilePic,
+                    profileImage: employer.profileImage,
                     organization: employer.organization,
                     createdAt: employer.createdAt
                 },
@@ -92,7 +93,7 @@ export const loginEmployer = async (req, res) => {
 
 export const getEmployerInfo = async (req, res) => {
     try {
-        return res.status(200).json(req.employer)
+        return res.status(200).json({ employer: req.employer })
     } catch (error) {
         console.log("Error in getEmployerInfo : ", error)
         return res.status(500).json("Internal sever error")
@@ -109,20 +110,49 @@ export const logoutEmployer = async (req, res) => {
     }
 }
 
-export const googleLogin = async (req, res) => {
+export const googleSignin = async (req, res) => {
     try {
+        const token = req?.headers?.authorization?.split(" ")[1];
+        if (!token) {
+            return res.status(400).json({ message: "No token provided" })
+        }
+
+        const decoded = await admin.auth().verifyIdToken(token);
+
+        let employer = await Employer.findOne({ firebaseUID: decoded?.uid })
+
+        if (!employer) {
+            const existingEmployer = await Employer.findOne({ email: decoded?.email })
+
+            if (existingEmployer && existingEmployer.provider === 'local') {
+                return res.status(400).json({ message: "Email already exists" })
+            }
+
+            employer = await Employer.create({
+                name: decoded?.name || decoded?.email?.split('@')[0],
+                email: decoded?.email,
+                provider: 'google',
+                firebaseUID: decoded?.uid,
+                profileImage: decoded?.picture,
+            })
+        }
+        const jwtToken = generateToken(employer?._id)
+        saveCookie(jwtToken, res)
+
+        return res.status(200).json({
+            employer: {
+                id: employer._id,
+                name: employer.name,
+                email: employer.email,
+                profileImage: employer.profileImage,
+                organization: employer.organization,
+                createdAt: employer.createdAt
+            },
+            message: "Signed in successfully"
+        })
 
     } catch (error) {
-        console.log("Error in googleLogin controller : ", error)
-        return res.status(500).json({ message: "Internal server error" })
-    }
-}
-
-export const facebookLogin = async (req, res) => {
-    try {
-
-    } catch (error) {
-        console.log("Error in facebookLogin controller : ", error)
+        console.log("Error in googleSignin controller : ", error)
         return res.status(500).json({ message: "Internal server error" })
     }
 }

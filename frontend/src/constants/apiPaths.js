@@ -3,7 +3,8 @@ const API_PATHS = {
         REGISTER : '/api/auth/register',
         LOGIN : '/api/auth/login',
         LOGOUT : '/api/auth/logout',
-        GET_EMPLOYER_INFO : '/api/auth/get-employer-info'
+        GET_EMPLOYER_INFO : '/api/auth/get-employer-info',
+        GOOGLE_SIGNIN : '/api/auth/google-signin'
     },
 }
 

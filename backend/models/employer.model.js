@@ -23,6 +23,7 @@ const employerSchema = mongoose.Schema({
     },
     organization: {
         type: String,
+        default : "N/A"
     },
     provider: {
         type: String,
@@ -30,19 +31,14 @@ const employerSchema = mongoose.Schema({
         default: 'local'
     },
 
-    firebaseUid: {
+    firebaseUID: {
         type: String
     }
 }, { timestamps: true })
 
-employerSchema.pre('save', async function (next) {
-    try {
-        if (!this.isModified('password')) return next();
-        this.password = await bcrypt.hash(this.password, 10)
-    } catch (err) {
-        console.log("Error in password hashing : ", err);
-        next()
-    }
+employerSchema.pre('save', async function () {
+    if (!this.isModified('password') || !this.password) return;
+    this.password = await bcrypt.hash(this.password, 10)
 })
 
 employerSchema.methods.comparePassword = async function (enteredPassword) {

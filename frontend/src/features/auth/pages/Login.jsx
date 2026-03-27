@@ -1,10 +1,12 @@
 import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { validateLoginForm } from "../../../utils/helper";
-import { loginEmployer } from "../../../store/slices/auth.slice";
+import { googleSignin, loginEmployer } from "../../../store/slices/auth.slice";
 import { toast } from "sonner";
 import Input from "../../../components/common/Input";
+import { signInWithPopup } from "firebase/auth";
+import { auth, googleProvider } from "../../../config/firebase";
 
 const Login = () => {
   const defaultFormData = {
@@ -16,6 +18,20 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { loading } = useSelector((state) => state.auth);
+
+  const handleGoogleSignin = async () => {
+    const response = await signInWithPopup(auth, googleProvider);
+    const token = await response?.user?.getIdToken();
+    dispatch(googleSignin(token))
+      .unwrap()
+      .then((res) => {
+        toast.success(res?.message);
+        navigate("/dashboard");
+      })
+      .catch((err) => {
+        toast.error(err?.message);
+      });
+  };
 
   const handleOnSubmit = (e) => {
     e.preventDefault();
@@ -61,6 +77,11 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
+      <br />
+      <button onClick={handleGoogleSignin}>Google</button>
+      <div>
+        <Link to="/register">Register</Link>
+      </div>
     </div>
   );
 };

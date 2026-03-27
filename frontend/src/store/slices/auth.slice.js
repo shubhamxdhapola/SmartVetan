@@ -59,6 +59,23 @@ export const getEmployerInfo = createAsyncThunk(
     }
 )
 
+export const googleSignin = createAsyncThunk(
+    'auth/google-signin',
+    async (token, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.post(
+                API_PATHS.AUTH.GOOGLE_SIGNIN, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            })
+            return response?.data
+        } catch (error) {
+            return rejectWithValue(error?.response?.data)
+        }
+    }
+)
+
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
@@ -92,6 +109,17 @@ const authSlice = createSlice({
                 state.error = action.payload
                 state.loading = false
             })
+            .addCase(googleSignin.pending, (state) => {
+                state.authenticating = true
+            })
+            .addCase(googleSignin.fulfilled, (state, action) => {
+                state.authenticating = false
+                state.employer = action.payload?.employer
+            })
+            .addCase(googleSignin.rejected, (state, action) => {
+                state.error = action.payload
+                state.authenticating = false
+            })
             .addCase(logoutEmployer.pending, (state) => {
                 state.loading = true
             })
@@ -115,6 +143,6 @@ const authSlice = createSlice({
                 state.authenticating = false
             })
     }
-}) 
+})
 
 export default authSlice.reducer
