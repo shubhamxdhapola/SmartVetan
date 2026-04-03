@@ -20,14 +20,16 @@ const employeeSchema = mongoose.Schema({
     email: {
         type: String,
         unique: true,
+        trim: true,
+        lowerCase: true,
     },
     salary: {
         type: Number,
         required: true,
-        default : 0
+        default: 0
     },
-    designation : {
-        type : String,
+    designation: {
+        type: String,
     },
     address: {
         type: String,

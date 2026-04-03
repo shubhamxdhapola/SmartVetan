@@ -10,6 +10,8 @@ const employerSchema = mongoose.Schema({
         type: String,
         unique: true,
         required: true,
+        trim: true,
+        lowerCase: true,
     },
     password: {
         type: String,
@@ -23,7 +25,7 @@ const employerSchema = mongoose.Schema({
     },
     organization: {
         type: String,
-        default : "N/A"
+        default: "N/A"
     },
     provider: {
         type: String,

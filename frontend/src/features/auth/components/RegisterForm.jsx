@@ -68,7 +68,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <section className="w-full lg:w-1/2 flex items-start lg:items-center flex-col justify-start bg-surface p-6 md:p-8 lg:p-20">
+    <section className="w-full lg:w-1/2 flex items-start lg:items-center flex-col justify-start bg-surface p-8 lg:p-20 mb-15 lg:mb-0">
 
       {/* Header Mobile Logo */}
       <div className="lg:hidden flex items-center gap-3 mb-15 justify-start">
@@ -198,7 +198,7 @@ const RegisterForm = () => {
           </form>
         </div>
 
-        <footer className="text-left">
+        <footer className="text-center lg:text-left mt-12 lg:ml-1">
           <p className="text-on-surface-variant text-sm">
             Already have an account?{" "}
             <Link

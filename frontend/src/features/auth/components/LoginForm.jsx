@@ -57,7 +57,7 @@ const LoginForm = () => {
     }));
   };
   return (
-    <section className="w-full lg:w-[45%] xl:w-[40%] p-6 md:p-8 lg:p-16 xl:p-20 flex flex-col justify-center bg-surface relative z-10 border-r border-outline-variant/10">
+    <section className="w-full lg:w-[45%] xl:w-[40%] p-8 lg:p-16 xl:p-20 flex flex-col justify-center bg-surface relative z-10 border-r border-outline-variant/10 ">
       {/* Mobile Header Only */}
       <div className="lg:hidden mb-15 flex items-center gap-3">
         <div className="w-10 h-10 primary-gradient rounded-lg flex items-center justify-center">
@@ -162,7 +162,7 @@ const LoginForm = () => {
           </button>
         </form>
 
-        <footer className="mt-12 text-center lg:text-left">
+        <footer className="mt-12 text-center lg:text-left lg:ml-1">
           <p className="text-sm text-on-surface-variant">
             Don't have an account?{" "}
             <Link

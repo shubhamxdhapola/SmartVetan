@@ -11,7 +11,7 @@ function App() {
   const { authenticating } = useSelector((state) => state.auth);
   useEffect(() => {
     dispatch(getEmployerInfo());
-  }, []);
+  }, [dispatch]);
 
   if (authenticating) {
     return (

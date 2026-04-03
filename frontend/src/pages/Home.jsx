@@ -8,10 +8,12 @@ const Home = () => {
   return (
     <div className="bg-[#060e20] text-white min-h-screen">
       <HomeNav />
-      <Hero />
-      <Features />
-      <CTA />
-      <Footer />
+      <div className="overflow-x-hidden">
+        <Hero />
+        <Features />
+        <CTA />
+        <Footer />
+      </div>
     </div>
   );
 };

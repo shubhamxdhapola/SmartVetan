@@ -10,6 +10,7 @@ import salaryRecordsRoutes from './routes/salary.records.routes.js'
 import advanceRoutes from './routes/advance.routes.js'
 import dashboardRoutes from './routes/dashboard.route.js'
 import { authenticate } from './middlewares/authenticate.js';
+import subscribeRoutes from './routes/subscribe.route.js';
 
 const app = express();
 const PORT = process.env.PORT
@@ -24,6 +25,7 @@ app.use(cors({
 
 app.use('/api/auth', authRoutes)
 app.use('/api/upload', uploadRoutes)
+app.use('/api/subscribe', subscribeRoutes)
 app.use('/api/employee', authenticate, employeeRoutes)
 app.use('/api/advance', authenticate, advanceRoutes)
 app.use('/api/salary', authenticate, salaryRecordsRoutes);
