@@ -23,7 +23,18 @@ function App() {
 
   return (
     <>
-      <Toaster />
+      <Toaster
+        // position=""
+        toastOptions={{
+          style: {
+            background: "#0f1930",
+            color: "#dee5ff",
+            border: "0.5px solid #40485d66 ",
+            // fontFamily : "var(--font-headline)",
+            borderRadius: "5px",
+          },
+        }}
+      />
       <RouterProvider router={router} />
     </>
   );
