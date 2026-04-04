@@ -2,7 +2,7 @@ import { MdDashboard, MdLogout, MdToken } from "react-icons/md";
 import { Link } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutEmployer } from "../../store/slices/auth.slice";
-import { toast } from "react-hot-toast";
+import { toast } from "sonner";
 
 const HomeNav = () => {
   
@@ -13,6 +13,7 @@ const HomeNav = () => {
     dispatch(logoutEmployer())
       .unwrap()
       .then((res) => {
+        console.log(res)
         toast.success(res?.message);
       })
       .catch((err) => toast.error(err?.message));
