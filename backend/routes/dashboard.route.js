@@ -1,8 +1,9 @@
 import express from 'express'
-import { getDashboardData } from '../controllers/dashboard.controller.js'
+import { getDashboardData, getHistoricalData } from '../controllers/dashboard.controller.js'
 
 const router = express.Router()
 
 router.get('/', getDashboardData)
+router.get('/history', getHistoricalData)
 
 export default router

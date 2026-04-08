@@ -13,3 +13,40 @@ export const validateLoginForm = (email, password) => {
     if (!password.trim()) return toast.error("Password is required")
     return true
 }
+
+export const getFormattedMonth = (month) => {
+    const date = new Date(month + "-01");
+    const formattedMonth = date.toLocaleString("en-US", {
+        month: "long",
+        year: "numeric",
+    });
+    return formattedMonth
+}
+
+export const getMonthsArray = (joiningDateISO) => {
+    const result = [];
+
+    const start = new Date(joiningDateISO);
+    const today = new Date();
+
+    // move to first day of joining month
+    start.setDate(1);
+
+    // move to previous month of current date
+    const end = new Date(today.getFullYear(), today.getMonth() , 0);
+
+    while (start <= end) {
+        const label = start.toLocaleString("en-US", {
+            month: "long",
+            year: "numeric",
+        })
+        const value = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`
+        result.push({ label: label, value: value });
+
+        // move to next month
+        start.setMonth(start.getMonth() + 1);
+    }
+
+    return result.reverse()
+};
+

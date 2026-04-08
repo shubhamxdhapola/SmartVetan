@@ -5,6 +5,10 @@ import Login from "../features/auth/pages/Login";
 import Dashboard from "../features/dashboard/Dashboard";
 import PublicRoute from "./PublicRoute";
 import ProtectedRoute from "./ProtectedRoute";
+import Employees from "../features/employee/Employees";
+import Salary from "../features/salary/Salary";
+import Advance from "../features/advance/Advance";
+import Settings from "../pages/Settings";
 
 const router = createBrowserRouter([
   {
@@ -21,7 +25,11 @@ const router = createBrowserRouter([
   {
     element: <ProtectedRoute />,
     children: [
-        { path: "dashboard", element: <Dashboard /> }
+      { path: "dashboard", element: <Dashboard /> },
+      { path: "employees", element: <Employees /> },
+      { path: "advance", element: <Advance /> },
+      { path: "salary", element: <Salary /> },
+      { path: "settings", element: <Settings /> },
     ],
   },
 ]);

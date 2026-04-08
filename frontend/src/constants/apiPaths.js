@@ -6,7 +6,11 @@ const API_PATHS = {
         GET_EMPLOYER_INFO: '/api/auth/get-employer-info',
         GOOGLE_SIGNIN: '/api/auth/google-signin'
     },
-    SUBSCRIBE: '/api/subscribe'
+    SUBSCRIBE: '/api/subscribe',
+    DASHBOARD: {
+        SUMMARY: '/api/dashboard',
+        HISTORY: (month) => `/api/dashboard/history?month=${month}`
+    }
 }
 
 export default API_PATHS
