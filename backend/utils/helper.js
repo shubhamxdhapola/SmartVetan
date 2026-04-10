@@ -63,7 +63,7 @@ export const getRecentAdvances = async (employerId) => {
 
     const advances = await Advance.find({ employerId })
         .select('amount')
-        .populate('employeeId', '_id name profilePic salary')
+        .populate('employeeId', '_id name profilePic salary designation')
         .sort({ createdAt: -1 })
         .limit(5)
         .lean();
@@ -74,6 +74,7 @@ export const getRecentAdvances = async (employerId) => {
         empId: item?.employeeId?._id,
         empName: item?.employeeId?.name,
         empSalary: item?.employeeId?.salary,
+        designation: item?.employeeId?.designation,
         profilePic: item?.employeeId?.profilePic
     }))
 

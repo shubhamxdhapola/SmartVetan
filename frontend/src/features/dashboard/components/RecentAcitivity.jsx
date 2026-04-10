@@ -75,7 +75,7 @@ const RecentAcitivity = () => {
                   Employee
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Department
+                  Designation
                 </th>
                 <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
                   Base Salary
@@ -115,7 +115,7 @@ const RecentAcitivity = () => {
                       </div>
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-sm">Human Resource</td>
+                  <td className="px-6 py-4 text-sm">{item?.designation}</td>
                   <td className="px-6 py-4 text-sm font-['Manrope']">
                     {item.empSalary}
                   </td>
