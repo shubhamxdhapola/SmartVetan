@@ -62,10 +62,10 @@ export const getStatsByMonth = async (month, employerId) => {
 export const getRecentAdvances = async (employerId) => {
 
     const advances = await Advance.find({ employerId })
-        .select('amount')
+        .select('amount date')
         .populate('employeeId', '_id name profilePic salary designation')
         .sort({ createdAt: -1 })
-        .limit(5)
+        .limit(3)
         .lean();
 
     const result = advances.map(item => ({
@@ -75,7 +75,8 @@ export const getRecentAdvances = async (employerId) => {
         empName: item?.employeeId?.name,
         empSalary: item?.employeeId?.salary,
         designation: item?.employeeId?.designation,
-        profilePic: item?.employeeId?.profilePic
+        profilePic: item?.employeeId?.profilePic,
+        date: item?.date,
     }))
 
     return result

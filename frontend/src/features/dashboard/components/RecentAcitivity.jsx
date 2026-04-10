@@ -1,71 +1,15 @@
-import React from "react";
+import dayjs from "dayjs";
 import { useSelector } from "react-redux";
 
 const RecentAcitivity = () => {
   const { recentAdvances } = useSelector((state) => state.dashboard);
-  console.log(recentAdvances)
-  const tableData = [
-    {
-      initial: "JD",
-      name: "John Doe",
-      empId: "EMP-2045",
-      bgClass: "bg-primary/20",
-      textClass: "text-primary",
-      dept: "Engineering",
-      base: "₹ 85,000",
-      advance: "₹ 5,000",
-      net: "₹ 80,000",
-      status: "Paid",
-      statusColor: "text-primary border-primary/20 bg-primary/10",
-    },
-    {
-      initial: "AS",
-      name: "Anita Sharma",
-      empId: "EMP-2089",
-      bgClass: "bg-secondary/20",
-      textClass: "text-secondary",
-      dept: "Marketing",
-      base: "₹ 62,000",
-      advance: "₹ 0",
-      net: "₹ 62,000",
-      status: "Pending",
-      statusColor: "text-tertiary border-tertiary/20 bg-tertiary/10",
-    },
-    {
-      initial: "RK",
-      name: "Rajesh Kumar",
-      empId: "EMP-2101",
-      bgClass: "bg-error/20",
-      textClass: "text-error",
-      dept: "Operations",
-      base: "₹ 45,000",
-      advance: "₹ 12,500",
-      net: "₹ 32,500",
-      status: "Paid",
-      statusColor: "text-primary border-primary/20 bg-primary/10",
-    },
-  ];
+  
 
   return (
     <section>
       <div className="bg-surface-container-low rounded-lg overflow-hidden">
         <div className="p-6 border-b border-outline-variant/10 flex items-center justify-between">
           <h3 className="text-lg font-bold">Recent Payroll Entries</h3>
-          <div className="flex gap-2">
-            <div className="relative">
-              <input
-                className="bg-surface-container-high border-none text-sm rounded-lg pl-10 pr-4 py-2 w-64 focus:ring-1 focus:ring-primary"
-                placeholder="Search entries..."
-                type="text"
-              />
-              <span
-                className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm"
-                data-icon="search"
-              >
-                search
-              </span>
-            </div>
-          </div>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -86,11 +30,8 @@ const RecentAcitivity = () => {
                 <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
                   Net Payable
                 </th>
-                {/* <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Status
-                </th>  */}
                 <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Action
+                  Date
                 </th>
               </tr>
             </thead>
@@ -127,22 +68,8 @@ const RecentAcitivity = () => {
                   <td className="px-6 py-4 text-sm font-bold font-['Manrope']">
                     {item.empSalary - item.advance}
                   </td>
-                  {/* <td className="px-6 py-4">
-                    <span
-                      className={`px-2.5 py-1 rounded-full text-[10px] font-bold uppercase border ${row.statusColor}`}
-                    >
-                      {row.status}
-                    </span>
-                  </td> */}
-                  <td className="px-6 py-4">
-                    <button className="text-on-surface-variant hover:text-primary transition-colors">
-                      <span
-                        className="material-symbols-outlined text-lg"
-                        data-icon="more_vert"
-                      >
-                        more_vert
-                      </span>
-                    </button>
+                  <td className="px-6 py-4 text-sm font-bold font-['Manrope']">
+                    {dayjs(item?.date).format("DD MMM YY")}
                   </td>
                 </tr>
               ))}

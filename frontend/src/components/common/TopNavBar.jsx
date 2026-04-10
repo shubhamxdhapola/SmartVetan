@@ -19,7 +19,7 @@ const TopNavBar = () => {
         />
       </div> */}
       <div className="flex items-center gap-6">
-        <div className="flex items-center gap-2">
+        {/* <div className="flex items-center gap-2">
           <button className="p-2 text-[#a3aac4] hover:bg-[#1f2b49] rounded-full transition-colors relative">
             <span
               className="material-symbols-outlined"
@@ -39,7 +39,7 @@ const TopNavBar = () => {
               settings
             </span>
           </button>
-        </div>
+        </div> */}
         <div className="h-8 w-[1px] bg-outline-variant/30"></div>
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">

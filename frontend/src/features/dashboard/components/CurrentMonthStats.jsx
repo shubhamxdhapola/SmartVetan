@@ -1,10 +1,32 @@
 import { useSelector } from "react-redux";
 import { getFormattedMonth } from "../../../utils/helper";
+import CurrentMonthStatsCard from "../../../components/cards/CurrentMonthStatsCard";
+import { IoCashOutline } from "react-icons/io5";
+import { CiBank } from "react-icons/ci";
+import { FaUsers } from "react-icons/fa";
+import Skeleton from "react-loading-skeleton";
 
 const CurrentMonthStats = () => {
-  const { currentMonth } = useSelector((state) => state.dashboard);
-
+  const { currentMonth, loading } = useSelector((state) => state.dashboard);
   const month = getFormattedMonth(currentMonth?.month);
+
+  const DATA = [
+    {
+      label: "Total Salary",
+      value: "₹ " + currentMonth?.totalSalary.toLocaleString("en-IN"),
+      Icon: IoCashOutline,
+    },
+    {
+      label: "Total Advances",
+      value: "₹ " + currentMonth?.advance.toLocaleString("en-IN"),
+      Icon: CiBank,
+    },
+    {
+      label: "Total Employees",
+      value: currentMonth?.employees,
+      Icon: FaUsers,
+    },
+  ];
 
   return (
     <section className="mb-12">
@@ -25,85 +47,24 @@ const CurrentMonthStats = () => {
           Live Data
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Total Salary Card */}
-        <div className="bg-surface-container-high p-6 rounded-lg relative overflow-hidden group hover:bg-surface-bright transition-all duration-300">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <span
-              className="material-symbols-outlined text-6xl"
-              data-icon="payments"
-            >
-              payments
-            </span>
-          </div>
-          <p className="text-on-surface-variant text-sm font-medium mb-2">
-            Total Salary Disbursed
-          </p>
-          <h3 className="text-4xl font-extrabold text-[#dee5ff] tracking-tight mb-4">
-            ₹ {currentMonth?.totalSalary.toLocaleString("en-IN")}
-          </h3>
-          <div className="flex items-center gap-2 text-secondary text-xs font-semibold">
-            <span
-              className="material-symbols-outlined text-sm"
-              data-icon="trending_up"
-            >
-              trending_up
-            </span>
-            8.4% vs last month
-          </div>
-        </div>
-        {/* Total Advance Card */}
-        <div className="bg-surface-container-high p-6 rounded-lg relative overflow-hidden group hover:bg-surface-bright transition-all duration-300">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <span
-              className="material-symbols-outlined text-6xl"
-              data-icon="account_balance"
-            >
-              account_balance
-            </span>
-          </div>
-          <p className="text-on-surface-variant text-sm font-medium mb-2">
-            Total Advances
-          </p>
-          <h3 className="text-4xl font-extrabold text-[#dee5ff] tracking-tight mb-4">
-            ₹ {currentMonth?.advance.toLocaleString("en-IN")}
-          </h3>
-          <div className="flex items-center gap-2 text-error text-xs font-semibold">
-            <span
-              className="material-symbols-outlined text-sm"
-              data-icon="trending_up"
-            >
-              trending_up
-            </span>
-            12.1% vs last month
-          </div>
-        </div>
-        {/* Total Employees Card */}
-        <div className="bg-surface-container-high p-6 rounded-lg relative overflow-hidden group hover:bg-surface-bright transition-all duration-300">
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <span
-              className="material-symbols-outlined text-6xl"
-              data-icon="badge"
-            >
-              badge
-            </span>
-          </div>
-          <p className="text-on-surface-variant text-sm font-medium mb-2">
-            Active Employees
-          </p>
-          <h3 className="text-4xl font-extrabold text-[#dee5ff] tracking-tight mb-4">
-            {currentMonth?.employees}
-          </h3>
-          <div className="flex items-center gap-2 text-secondary text-xs font-semibold">
-            <span
-              className="material-symbols-outlined text-sm"
-              data-icon="person_add"
-            >
-              person_add
-            </span>
-            14 new this month
-          </div>
-        </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center">
+        {DATA.map(({ label, value, Icon }, index) =>
+          loading ? (
+            <Skeleton
+              height="133px"
+              borderRadius={8}
+              baseColor="#141f38"
+              highlightColor="#1f2b49"
+            />
+          ) : (
+            <CurrentMonthStatsCard
+              key={index}
+              label={label}
+              value={value}
+              Icon={Icon}
+            />
+          ),
+        )}
       </div>
     </section>
   );

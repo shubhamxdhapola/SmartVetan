@@ -1,22 +1,27 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { getFormattedMonth, getMonthsArray } from "../../../utils/helper";
+import { getMonthsArray } from "../../../utils/helper";
+import { MdExpandMore } from "react-icons/md";
 import { getHistoricalData } from "../../../store/slices/dashboard.slice";
+import HistoricalDataStatsCard from "../../../components/cards/HistoricalDataStatsCard";
+import Skeleton from "react-loading-skeleton";
 
 const HistoricalData = () => {
-  const { customMonth } = useSelector((state) => state.dashboard);
+  const { customMonth, customMonthLoading, loading } = useSelector(
+    (state) => state.dashboard,
+  );
   const { employer } = useSelector((state) => state.auth);
+  const joiningMonth = employer?.createdAt;
+  const monthsArr = getMonthsArray(joiningMonth);
+  const [selectedMonth, setSelectedMonth] = useState();
+  const dispatch = useDispatch();
 
-  const empJoiningMonth = employer?.createdAt;
-  console.log(empJoiningMonth);
-  const date = new Date(empJoiningMonth);
-  const formattedMonth = date.toLocaleString("en-US", {
-    month: "long",
-    year: "numeric",
-  });
-  console.log(formattedMonth);
+  useEffect(() => {
+    if (!selectedMonth) return;
+    dispatch(getHistoricalData(selectedMonth));
+  }, [selectedMonth]);
 
-  const statBlocks = [
+  const DATA = [
     { label: "Employees", value: customMonth?.employees },
     {
       label: "Advance",
@@ -29,36 +34,26 @@ const HistoricalData = () => {
     {
       label: "Payable",
       value: "₹ " + customMonth?.payable.toLocaleString("en-IN"),
-      colorClass: "text-secondary",
+      color: "text-secondary",
     },
     {
       label: "Paid Amount",
       value: "₹ " + customMonth?.paidAmount.toLocaleString("en-IN"),
-      colorClass: "text-primary",
+      color: "text-primary",
     },
     {
       label: "Pending",
       value: "₹ " + customMonth?.pendingAmount.toLocaleString("en-IN"),
-      colorClass: "text-error",
+      color: "text-error",
     },
     { label: "Paid Staff", value: customMonth?.paidStaff },
     {
       label: "Pending Staff",
       value: customMonth?.pendingStaff,
-      colorClass: "text-error",
+      color: "text-error",
     },
   ];
 
-  const monthsArr = getMonthsArray(empJoiningMonth);
-
-  const [selectedMonth, setSelectedMonth] = useState();
-  const dispatch = useDispatch();
-  useEffect(() => {
-    if (!selectedMonth) return;
-    dispatch(getHistoricalData(selectedMonth));
-  }, [selectedMonth]);
-
-  console.log(selectedMonth);
   return (
     <section className="mb-12">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
@@ -83,11 +78,8 @@ const HistoricalData = () => {
                 </option>
               ))}
             </select>
-            <span
-              className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant"
-              data-icon="expand_more"
-            >
-              expand_more
+            <span className="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-on-surface-variant">
+              <MdExpandMore />
             </span>
           </div>
           <button className="bg-linear-to-r from-primary to-secondary text-on-primary-fixed font-bold px-4 py-2.5 rounded-lg text-sm flex items-center gap-2 hover:opacity-90 transition-opacity">
@@ -102,19 +94,23 @@ const HistoricalData = () => {
         </div>
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        {statBlocks.map((stat, index) => (
-          <div
-            key={index}
-            className="bg-surface-container-low p-4 rounded-lg border border-outline-variant/10"
-          >
-            <p className="text-on-surface-variant text-xs uppercase tracking-wider mb-1">
-              {stat.label}
-            </p>
-            <p className={`text-xl font-bold ${stat.colorClass || ""}`}>
-              {stat.value}
-            </p>
-          </div>
-        ))}
+        {DATA.map(({ label, color, value }, index) =>
+          customMonthLoading || loading ? (
+            <Skeleton
+              height="80px"
+              borderRadius={8}
+              baseColor="#141f38"
+              highlightColor="#1f2b49"
+            />
+          ) : (
+            <HistoricalDataStatsCard
+              key={index}
+              label={label}
+              color={color}
+              value={value}
+            />
+          ),
+        )}
       </div>
     </section>
   );

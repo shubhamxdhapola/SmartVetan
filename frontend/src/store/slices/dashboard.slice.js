@@ -38,6 +38,7 @@ const dashboardSlice = createSlice({
         customMonth: null,
         recentAdvances: null,
         loading: true,
+        customMonthLoading: false,
         error: null,
     },
     reducers: {},
@@ -57,15 +58,15 @@ const dashboardSlice = createSlice({
                 state.loading = false
             })
             .addCase(getHistoricalData.pending, (state) => {
-                state.loading = true
+                state.customMonthLoading = true
             })
             .addCase(getHistoricalData.fulfilled, (state, action) => {
-                state.loading = false
+                state.customMonthLoading = false
                 state.customMonth = action?.payload?.stats
             })
             .addCase(getHistoricalData.rejected, (state, action) => {
                 state.error = action.payload
-                state.loading = false
+                state.customMonthLoading = false
             })
     }
 })

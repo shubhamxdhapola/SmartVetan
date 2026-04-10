@@ -1,3 +1,4 @@
+import "react-loading-skeleton/dist/skeleton.css";
 import { RouterProvider } from "react-router-dom";
 import { Toaster } from "sonner";
 import router from "./router/router";
@@ -5,6 +6,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { getEmployerInfo } from "./store/slices/auth.slice";
 import { Loader2 } from "lucide-react";
+import { SkeletonTheme } from "react-loading-skeleton";
 
 function App() {
   const dispatch = useDispatch();
@@ -35,6 +37,7 @@ function App() {
           },
         }}
       />
+      <SkeletonTheme baseColor="#141f38" highlightColor="#1f2b49" />
       <RouterProvider router={router} />
     </>
   );
