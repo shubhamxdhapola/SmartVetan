@@ -30,6 +30,7 @@ const employeeSchema = mongoose.Schema({
     },
     designation: {
         type: String,
+        default : "N/A"
     },
     address: {
         type: String,

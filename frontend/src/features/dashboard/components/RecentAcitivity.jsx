@@ -1,9 +1,22 @@
-import dayjs from "dayjs";
 import { useSelector } from "react-redux";
+import Pagination from "../../../components/common/Pagination";
+import Skeleton from "react-loading-skeleton";
+
+const TABLE_HEADINGS = [
+  "Employee",
+  "Designation",
+  "Base Salary",
+  "Total Salary",
+  "Latest Advance",
+  "Net Payable",
+];
 
 const RecentAcitivity = () => {
-  const { recentAdvances } = useSelector((state) => state.dashboard);
-  
+  const { recentAdvances, loading } = useSelector((state) => state.dashboard);
+  const { currentPage } = useSelector((state) => state.pagination);
+  const itemsPerPage = 3;
+  const startIndex = currentPage * itemsPerPage - itemsPerPage;
+  const endIndex = currentPage * itemsPerPage;
 
   return (
     <section>
@@ -15,86 +28,94 @@ const RecentAcitivity = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="bg-surface-container-high/50">
-                <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Employee
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Designation
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Base Salary
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Advance Taken
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Net Payable
-                </th>
-                <th className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider">
-                  Date
-                </th>
+                {TABLE_HEADINGS.map((heading, index) => (
+                  <th
+                    className="px-6 py-4 text-xs font-semibold text-on-surface-variant uppercase tracking-wider"
+                    key={index}
+                  >
+                    {heading}
+                  </th>
+                ))}
               </tr>
             </thead>
             <tbody className="divide-y divide-outline-variant/5">
-              {recentAdvances?.map((item, index) => (
-                <tr
-                  key={index}
-                  className="hover:bg-surface-bright/30 transition-colors"
-                >
-                  <td className="px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div
-                        className={`h-8 w-8 rounded-full flex items-center justify-center  text-xs font-bold`}
+              {loading
+                ? [...Array(3)].map((_, i) => (
+                    <tr
+                      key={i}
+                      className="hover:bg-surface-bright/30 transition-colors space-x-4"
+                    >
+                      {[...Array(6)].map((_, j) => (
+                        <td className="px-4 py-4">
+                          <Skeleton
+                            key={j}
+                            height="20px"
+                            borderRadius={3}
+                            baseColor="#141f38"
+                            highlightColor="#1f2b49"
+                          />
+                        </td>
+                      ))}
+                    </tr>
+                  ))
+                : recentAdvances
+                    ?.slice(startIndex, endIndex)
+                    ?.map((item, index) => (
+                      <tr
+                        key={index}
+                        className="hover:bg-surface-bright/30 transition-colors"
                       >
-                        {item.profilePic}
-                      </div>
-                      <div>
-                        <p className="text-sm font-semibold">{item.empName}</p>
-                        <p className="text-xs text-on-surface-variant">
-                          {item.empId.slice(-3).toUpperCase()}
-                        </p>
-                      </div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 text-sm">{item?.designation}</td>
-                  <td className="px-6 py-4 text-sm font-['Manrope']">
-                    {item.empSalary}
-                  </td>
-                  <td
-                    className={`px-6 py-4 text-sm font-['Manrope'] ${item.advance !== "₹ 0" ? "text-error" : "text-on-surface-variant"}`}
-                  >
-                    {item.advance}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-bold font-['Manrope']">
-                    {item.empSalary - item.advance}
-                  </td>
-                  <td className="px-6 py-4 text-sm font-bold font-['Manrope']">
-                    {dayjs(item?.date).format("DD MMM YY")}
-                  </td>
-                </tr>
-              ))}
+                        <td className="px-6 py-4">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold border border-primary/30 overflow-hidden bg-surface-container-highest`}
+                            >
+                              {item?.empProfilePic ? (
+                                <img
+                                  alt="User profile avatar"
+                                  className="w-full h-full object-cover"
+                                  src={item?.empProfilePic}
+                                />
+                              ) : (
+                                item?.empName.split("")[0]
+                              )}
+                            </div>
+                            <div>
+                              <p className="text-sm font-semibold">
+                                {item.empName}
+                              </p>
+                              <p className="text-xs text-on-surface-variant">
+                                SV-{item.empId.slice(-3).toUpperCase()}
+                              </p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm">
+                          {item?.designation || " N/A "}{" "}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-['Manrope']">
+                          ₹ {item.empSalary.toLocaleString("en-IN")}
+                        </td>
+                        <td
+                          className={`px-6 py-4 text-sm font-['Manrope'] ${item.advance !== "₹ 0" ? "text-error" : "text-on-surface-variant"}`}
+                        >
+                          ₹ {item.totalAdvance.toLocaleString("en-IN")}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-bold font-['Manrope']">
+                          ₹ {item.latestAdvance.toLocaleString("en-IN")}
+                        </td>
+                        <td className="px-6 py-4 text-sm font-bold font-['Manrope']">
+                          ₹ {item?.netPayable.toLocaleString("en-IN")}
+                        </td>
+                      </tr>
+                    ))}
             </tbody>
           </table>
         </div>
-        <div className="p-4 border-t border-outline-variant/10 flex items-center justify-between">
-          <p className="text-xs text-on-surface-variant">
-            Showing 3 of 482 entries
-          </p>
-          <div className="flex gap-2">
-            <button className="px-3 py-1 rounded border border-outline-variant/20 text-xs hover:bg-surface-container-high transition-colors">
-              Previous
-            </button>
-            <button className="px-3 py-1 rounded bg-primary/10 border border-primary/20 text-xs text-primary font-bold">
-              1
-            </button>
-            <button className="px-3 py-1 rounded border border-outline-variant/20 text-xs hover:bg-surface-container-high transition-colors">
-              2
-            </button>
-            <button className="px-3 py-1 rounded border border-outline-variant/20 text-xs hover:bg-surface-container-high transition-colors">
-              Next
-            </button>
-          </div>
-        </div>
+        <Pagination
+          totalItems={recentAdvances?.length}
+          itemsPerPage={itemsPerPage}
+        />
       </div>
     </section>
   );

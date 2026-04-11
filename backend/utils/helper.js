@@ -61,24 +61,44 @@ export const getStatsByMonth = async (month, employerId) => {
 
 export const getRecentAdvances = async (employerId) => {
 
-    const advances = await Advance.find({ employerId })
-        .select('amount date')
-        .populate('employeeId', '_id name profilePic salary designation')
-        .sort({ createdAt: -1 })
-        .limit(3)
-        .lean();
+    return await Advance.aggregate([
 
-    const result = advances.map(item => ({
-        _id: item._id,
-        advance: item.amount,
-        empId: item?.employeeId?._id,
-        empName: item?.employeeId?.name,
-        empSalary: item?.employeeId?.salary,
-        designation: item?.employeeId?.designation,
-        profilePic: item?.employeeId?.profilePic,
-        date: item?.date,
-    }))
+        { $match: { employerId } },
+        { $sort: { createdAt: -1 } },
+        {
+            $group: {
+                _id: "$employeeId",
+                totalAdvance: { $sum: "$amount" },
+                latestAdvance: { $first: "$$ROOT" }
+            }
+        },
+        { $limit: 15 },
+        {
+            $lookup: {
+                from: "employees",
+                localField: "_id",
+                foreignField: "_id",
+                as: "employee"
+            }
+        },
+        { $unwind: "$employee" },
+        {
+            $project: {
+                _id: 0,
+                empId: "$_id",
+                empName: "$employee.name",
+                empProfilePic: "$employee.profilePic",
+                designation: "$employee.designation",
+                empSalary: "$employee.salary",
+                totalAdvance: 1,
+                latestAdvance: "$latestAdvance.amount",
+                date: "$latestAdvance.date",
+                netPayable: {
+                    $subtract: ["$employee.salary", "$totalAdvance"]
+                }
 
-    return result
+            }
+        }
+    ]);
 
 }

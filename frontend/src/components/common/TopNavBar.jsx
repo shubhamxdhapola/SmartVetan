@@ -40,7 +40,7 @@ const TopNavBar = () => {
             </span>
           </button>
         </div> */}
-        <div className="h-8 w-[1px] bg-outline-variant/30"></div>
+        <div className="h-8 w-px bg-outline-variant/30"></div>
         <div className="flex items-center gap-3">
           <div className="text-right hidden sm:block">
             <p className="text-xs font-bold text-on-surface">
@@ -51,11 +51,11 @@ const TopNavBar = () => {
             </p>
           </div>
           <div className="h-10 w-10 rounded-full border border-primary/30 overflow-hidden bg-surface-container-highest flex justify-center items-center">
-            {employer?.profilePic ? (
+            {employer?.profileImage ? (
               <img
                 alt="User profile avatar"
                 className="w-full h-full object-cover"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuDL3EUf5YWMtJEtKBspJmd7Pn7X8hjWd6vB7F8gXpBS-abiRcLuz5DSgtcoc9EGRIGuOsZo93SsEP7r7qRc31dwMJPcbWSREcl9-0x3t3ijmw75DuCg7fhIdBjE6g3vXMDpBiQJQ56FgXpofr3wMBhgm6m59InTbbh8u_8iQpZH1lhJ2Kqqv-u9xBO8vg9UEd08u_5siB1z3b6RMdwBMRrDyj5183avS0oHo83DKmXrcB67Qh8TgzBcPYTCEXwF9S5BM870fm4dLdY"
+                src={employer?.profileImage}
               />
             ) : (
               <span>{employer?.name.split('')[0]}</span>
