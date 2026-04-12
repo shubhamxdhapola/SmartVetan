@@ -124,3 +124,30 @@ h3,
 .mesh-gradient {
     background-image: radial-gradient(at 0% 0%, rgba(132, 85, 239, 0.15) 0px, transparent 50%), radial-gradient(at 100% 100%, rgba(52, 181, 250, 0.1) 0px, transparent 50%);
 }
+
+/* .hide-scrollbar {
+    overflow: scroll;
+    scrollbar-width: none;
+
+
+.hide-scrollbar::-webkit-scrollbar {
+    display: none;
+
+} */
+
+/* .no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+} */
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+* {
+  scrollbar-width: none;
+}

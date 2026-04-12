@@ -33,7 +33,7 @@ export const getMonthsArray = (joiningDateISO) => {
     start.setDate(1);
 
     // move to previous month of current date
-    const end = new Date(today.getFullYear(), today.getMonth() , 0);
+    const end = new Date(today.getFullYear(), today.getMonth(), 0);
 
     while (start <= end) {
         const label = start.toLocaleString("en-US", {
@@ -50,3 +50,23 @@ export const getMonthsArray = (joiningDateISO) => {
     return result.reverse()
 };
 
+export const getDate = () => {
+    return new Date().toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "long",
+        year: "numeric",
+    })
+}
+
+export const getTime = () => {
+    const now = new Date();
+    const formattedTime = now.toLocaleTimeString('en-IN', {
+        hour: '2-digit',
+        minute: '2-digit',
+        second: '2-digit',
+        hour12: true
+    });
+
+    const time = formattedTime.split(':').join(" : ")
+    return time.toUpperCase();
+}

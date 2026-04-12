@@ -5,7 +5,6 @@ import {
   MdAccountBalanceWallet,
   MdDashboard,
   MdLogout,
-  MdOutlinePayments,
   MdToken,
 } from "react-icons/md";
 import { useDispatch } from "react-redux";
@@ -54,13 +53,17 @@ const SideNavBar = ({ activeMenu }) => {
       <nav className="flex-1 px-4 space-y-2">
         {SideNavTabs.map(({ label, route, icon: Icon }, index) => (
           <Link
-            id={index}
+            key={index}
             to={route}
             className={`flex items-center gap-3 ${activeMenu === label && "bg-surface-container-high"} text-on-surface/90 rounded-md px-4 py-3 hover:translate-x-1 transition-transform`}
           >
             <Icon className="size-5" />
-            <span className="font-medium font-['Inter'
-            ]">{label}</span>
+            <span
+              className="font-medium font-['Inter'
+            ]"
+            >
+              {label}
+            </span>
           </Link>
         ))}
       </nav>

@@ -1,14 +1,24 @@
 import { useSelector } from "react-redux";
-import { getFormattedMonth } from "../../../utils/helper";
+import { getDate, getFormattedMonth, getTime } from "../../../utils/helper";
 import CurrentMonthStatsCard from "../../../components/cards/CurrentMonthStatsCard";
 import { IoCashOutline } from "react-icons/io5";
 import { CiBank } from "react-icons/ci";
 import { FaUsers } from "react-icons/fa";
 import Skeleton from "react-loading-skeleton";
+import { LuCalendar, LuClock3 } from "react-icons/lu";
+import { useEffect, useState } from "react";
 
 const CurrentMonthStats = () => {
   const { currentMonth, loading } = useSelector((state) => state.dashboard);
   const month = getFormattedMonth(currentMonth?.month);
+  const [time, setTime] = useState(getTime());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTime(getTime());
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const DATA = [
     {
@@ -30,7 +40,7 @@ const CurrentMonthStats = () => {
 
   return (
     <section className="mb-12">
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex items-start lg:items-center lg:flex-row gap-5 justify-between flex-col mb-8">
         <div>
           <h1 className="text-3xl font-extrabold tracking-tight text-[#dee5ff] mb-1">
             Current Month Stats
@@ -39,18 +49,22 @@ const CurrentMonthStats = () => {
             Real-time financial pulse for {month}
           </p>
         </div>
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-surface-container-high rounded-lg text-xs font-medium text-tertiary">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-tertiary"></span>
-          </span>
-          Live Data
+        <div className="flex justify-center items-center gap-4">
+          <div className="flex items-center justify-center gap-2 px-3.5 py-2.5 text-sm bg-surface-container-high rounded-lg font-medium text-on-background/90 font-['Inter]">
+            <LuCalendar className="size-4" />
+            {getDate()}
+          </div>
+          <div className="flex items-center justify-center gap-2 px-3.5 py-2.5 text-sm bg-primary/20 rounded-lg font-medium font-['Inter] text-on-surface/90">
+            <LuClock3 className="size-4" />
+            {time}
+          </div>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-center justify-center">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 items-center justify-center">
         {DATA.map(({ label, value, Icon }, index) =>
           loading ? (
             <Skeleton
+              key={index}
               height="133px"
               borderRadius={8}
               baseColor="#141f38"

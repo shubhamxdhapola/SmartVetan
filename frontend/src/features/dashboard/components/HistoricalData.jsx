@@ -56,7 +56,7 @@ const HistoricalData = () => {
 
   return (
     <section className="mb-12">
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 mb-8">
         <div>
           <h2 className="text-2xl font-bold tracking-tight text-[#dee5ff]">
             Historical Performance
@@ -93,10 +93,11 @@ const HistoricalData = () => {
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {DATA.map(({ label, color, value }, index) =>
           customMonthLoading || loading ? (
             <Skeleton
+              key={index}
               height="80px"
               borderRadius={8}
               baseColor="#141f38"
