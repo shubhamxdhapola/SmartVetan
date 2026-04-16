@@ -27,7 +27,7 @@ const advanceSchema = mongoose.Schema({
         type: Date,
         default: Date.now
     }
-}, { timeStamps: true })
+}, { timestamps: true })
 
 const Advance = mongoose.model('Advance', advanceSchema)
 export default Advance;

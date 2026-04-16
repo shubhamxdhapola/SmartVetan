@@ -34,7 +34,7 @@ const SideNavBar = ({ activeMenu }) => {
       });
   };
   return (
-    <aside className="fixed left-0 top-0 pt-8 pb-6  flex-col h-full w-64 bg-surface-container-low z-50 hidden md:flex shadow-[4px_0_24px_rgba(0,0,0,0.3)]">
+    <aside className="fixed left-0 top-0 pt-8 pb-6  flex-col h-full w-64 xl:w-75 bg-surface-container-low z-50 hidden md:flex shadow-[4px_0_24px_rgba(0,0,0,0.3)]">
       <div className="px-8 mb-10">
         <div className="flex items-center gap-2">
           <div className="w-10 h-10 primary-gradient rounded-lg flex items-center justify-center">

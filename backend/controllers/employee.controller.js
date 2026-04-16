@@ -1,13 +1,90 @@
+import Advance from "../models/advance.model.js";
 import Employee from "../models/employee.model.js";
+import SalaryRecord from "../models/salary.record.model.js";
 
 export const getEmployees = async (req, res) => {
     try {
-        let employees = await Employee.find({
-            employerId: req.employer._id
-        })
-        return res.status(200).json({ employees })
+        const startOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1);
+        const endOfMonth = new Date(new Date().getFullYear(), new Date().getMonth() + 1, 0);
+
+        const employees = await Employee.aggregate([
+            {
+                $match: {
+                    employerId: req.employer._id
+                }
+            },
+            {
+                $lookup: {
+                    from: "advances",
+                    let: { empId: "$_id" },
+                    pipeline: [
+                        {
+                            $match: {
+                                $expr: {
+                                    $and: [
+                                        { $eq: ["$employeeId", "$$empId"] },
+                                        { $gte: ["$date", startOfMonth] },
+                                        { $lte: ["$date", endOfMonth] }
+                                    ]
+                                }
+                            }
+                        }
+                    ],
+                    as: "monthlyAdvances"
+                }
+            },
+            {
+                $addFields: {
+                    totalMonthlyAdvance: { $sum: "$monthlyAdvances.amount" }
+                }
+            },
+            {
+                $project: {
+                    monthlyAdvances: 0 // hide details if not needed
+                }
+            }
+        ]);
+
+        return res.status(200).json({ employees });
     } catch (error) {
         console.log("Error in getEmployees controller : ", error)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const getEmployee = async (req, res) => {
+    try {
+        const { employeeId } = req.params;
+        const employerId = req.employer._id;
+
+        const employee = await Employee.findOne({ 
+            _id: employeeId, employerId 
+        }).lean();
+
+        if (!employee) {
+            return res.status(404).json({ message: "Employee not found" });
+        }
+        const salaryHistory = await SalaryRecord.find({
+            employeeId,
+            employerId
+        })
+            .sort({ createdAt: -1 })
+            .lean();
+
+        const advanceHistory = await Advance.find({
+            employeeId,
+            employerId
+        })
+            .sort({ date: -1 })
+            .lean();
+
+        return res.status(200).json({
+            employee,
+            salaryHistory,
+            advanceHistory
+        });
+    } catch (error) {
+        console.log("Error in getEmployee controller : ", error)
         return res.status(500).json({ message: "Internal server error" })
     }
 }
@@ -112,7 +189,7 @@ export const deleteEmployee = async (req, res) => {
         if (!mongoose.Types.ObjectId.isValid(employeeId)) {
             return res.status(400).json({ message: "Invalid employee id" });
         }
-        
+
         const employee = await Employee.findOneAndDelete({
             _id: employeeId, employerId: req.employer._id
         })

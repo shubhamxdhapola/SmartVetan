@@ -25,7 +25,7 @@ const TopNavBar = () => {
 
   return (
     <header
-      className={`fixed ${showSearchBar ? "-top-100" : "top-0"} right-0 left-0 md:left-65 z-40 bg-[#060e20] flex justify-between items-center px-4 py-4 transition-all flex-col-reverse md:flex-row gap-4 duration-300`}
+      className={`fixed ${showSearchBar ? "-top-100" : "top-0"} right-0 left-0 md:left-65 xl:left-76 z-40 bg-[#060e20] flex justify-between items-center px-4 py-4 transition-all flex-col-reverse md:flex-row gap-4 duration-300`}
     >
       <div
         className={`flex items-center gap-4 bg-[#091328] px-4 py-3 rounded-md w-[95%] border border-outline-variant/10 md:static fixed ${showSearchBar ? "top-3" : "-top-20"} transition-all duration-300`}

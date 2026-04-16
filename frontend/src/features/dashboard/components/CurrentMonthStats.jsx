@@ -42,7 +42,7 @@ const CurrentMonthStats = () => {
     <section className="mb-12">
       <div className="flex items-start lg:items-center lg:flex-row gap-5 justify-between flex-col mb-8">
         <div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-[#dee5ff] mb-1">
+          <h1 className="text-3xl font-extrabold tracking-tight text-on-surface mb-1">
             Current Month Stats
           </h1>
           <p className="text-on-surface-variant text-sm">

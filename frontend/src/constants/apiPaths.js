@@ -10,6 +10,13 @@ const API_PATHS = {
     DASHBOARD: {
         SUMMARY: '/api/dashboard',
         HISTORY: (month) => `/api/dashboard/history?month=${month}`
+    },
+    EMPLOYEE: {
+        GET_ALL: '/api/employee/',
+        ADD: '/api/employee/',
+        GET: (employeeId) => `/api/employee/${employeeId}`,
+        UPDATE: (employeeId) => `/api/employee/${employeeId}`,
+        DELETE: (employeeId) => `/api/employee/${employeeId}`,
     }
 }
 

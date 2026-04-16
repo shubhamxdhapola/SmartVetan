@@ -9,6 +9,7 @@ import Employees from "../features/employee/Employees";
 import Salary from "../features/salary/Salary";
 import Advance from "../features/advance/Advance";
 import Settings from "../pages/Settings";
+import EmployeeDetails from "../features/employee/EmployeeDetails";
 
 const router = createBrowserRouter([
   {
@@ -26,7 +27,13 @@ const router = createBrowserRouter([
     element: <ProtectedRoute />,
     children: [
       { path: "dashboard", element: <Dashboard /> },
-      { path: "employees", element: <Employees /> },
+      {
+        path: "employees",
+        children: [
+          { index: true, element: <Employees /> },
+          { path: ":employeeId", element: <EmployeeDetails /> },
+        ],
+      },
       { path: "advance", element: <Advance /> },
       { path: "salary", element: <Salary /> },
       { path: "settings", element: <Settings /> },

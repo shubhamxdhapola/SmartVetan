@@ -7,7 +7,7 @@ const DashboardLayout = ({ activeMenu, children }) => {
     <div className="min-h-screen">
       <TopNavBar />
       <SideNavBar activeMenu={activeMenu} /> {/* Desktop Nav */}
-      <main className="md:ml-64 pt-24 px-6 pb-12">{children}</main>
+      <main className="md:ml-64 xl:ml-75 pt-24 px-6 md:px-8 pb-12">{children}</main>
       <BottomNavBar activeMenu={activeMenu} /> {/* Mobile Nav */}
     </div>
   );

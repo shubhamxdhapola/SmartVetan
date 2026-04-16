@@ -151,3 +151,9 @@ h3,
 * {
   scrollbar-width: none;
 }
+
+.glass-card {
+  background: rgba(15, 25, 48, 0.6);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
