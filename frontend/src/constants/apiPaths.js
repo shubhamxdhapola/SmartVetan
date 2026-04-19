@@ -17,7 +17,8 @@ const API_PATHS = {
         GET: (employeeId) => `/api/employee/${employeeId}`,
         UPDATE: (employeeId) => `/api/employee/${employeeId}`,
         DELETE: (employeeId) => `/api/employee/${employeeId}`,
-    }
+    },
+    IMAGE_UPLOAD : '/api/upload'
 }
 
 export default API_PATHS

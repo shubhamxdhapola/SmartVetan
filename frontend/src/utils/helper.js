@@ -70,3 +70,14 @@ export const getTime = () => {
     const time = formattedTime.split(':').join(" : ")
     return time.toUpperCase();
 }
+
+export const validateEmployeeForm = (name, phone, email, salary, aadhar) => {
+    if (!name.trim()) return toast.error("Name is required")
+    if (!phone.trim()) return toast.error("Phone no. is required")
+    if (!aadhar.trim()) return toast.error("Aadhar no. is required")
+    if (!salary) return toast.error("Salary is required")
+    if (Number(salary) <= 0) return toast.error("Salary should be greater than 0")
+    if (email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))
+        return toast.error("Invalid email format");
+    return true
+}

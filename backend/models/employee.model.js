@@ -13,9 +13,9 @@ const employeeSchema = mongoose.Schema({
         type: String,
         required: true,
         unique: true,
-        maxlength: [10, "Phone number cannot exceed 10 digits"],
-        minlength: [10, "Phone number must be exactly 10 digits"],
-        match: [/^\d{10}$/, "Phone number must contain exactly 10 digits"]
+        // maxlength: [10, "Phone number cannot exceed 10 digits"],
+        // minlength: [10, "Phone number must be exactly 10 digits"],
+        // match: [/^\d{10}$/, "Phone number must contain exactly 10 digits"]
     },
     email: {
         type: String,
@@ -30,7 +30,7 @@ const employeeSchema = mongoose.Schema({
     },
     designation: {
         type: String,
-        default : "N/A"
+        default: "N/A"
     },
     address: {
         type: String,
@@ -39,13 +39,21 @@ const employeeSchema = mongoose.Schema({
         type: String,
         unique: true,
         required: true,
-        maxlength: [12, "Aadhaar number cannot exceed 12 digits"],
-        minlength: [12, "Aadhaar number must be exactly 12 digits"],
-        match: [/^\d{12}$/, "Aadhaar must contain exactly 12 digits"]
+        // maxlength: [12, "Aadhaar number cannot exceed 12 digits"],
+        // minlength: [12, "Aadhaar number must be exactly 12 digits"],
+        // match: [/^\d{12}$/, "Aadhaar must contain exactly 12 digits"]
     },
     profilePic: {
         type: String,
         default: null,
+    },
+    isActive: {
+        type: Boolean,
+        default: true,
+    },
+    joiningDate: {
+        type: Date,
+        default: Date.now
     }
 }, { timestamps: true })
 

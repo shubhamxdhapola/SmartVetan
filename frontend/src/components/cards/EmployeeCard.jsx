@@ -100,7 +100,7 @@ export default function EmployeeCard({ employee }) {
             Total Advance Taken
           </p>
           <p className="text-2xl font-black text-on-surface">
-            {employee.totalMonthlyAdvance}
+            {employee.totalMonthlyAdvance || 0}
           </p>
         </div>
       </div>

@@ -1,6 +1,11 @@
+import { useState } from "react";
 import { FaUserPlus } from "react-icons/fa";
+import Modal from "../../../components/Modal";
+import EmployeeForm from "../../../components/forms/EmployeeForm";
 
 const PageHeader = () => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
   return (
     <section className="flex items-end justify-between mb-12">
       <div>
@@ -12,10 +17,21 @@ const PageHeader = () => {
           ledger.
         </p>
       </div>
-      <button className="flex items-center gap-2 px-6 py-3 text-sm bg-primary/90 cursor-pointer text-on-primary-fixed font-extrabold rounded-md transition-all font-['Manrope']">
+      <button
+        className="flex items-center gap-2 px-6 py-3 text-sm bg-primary/90 cursor-pointer text-on-primary-fixed font-extrabold rounded-md transition-all font-['Manrope']"
+        onClick={() => setIsModalOpen(true)}
+      >
         <FaUserPlus className="size-5" />
         Add Employee
       </button>
+      {isModalOpen && (
+        <Modal>
+          <EmployeeForm
+            isModalOpen={isModalOpen}
+            setIsModalOpen={setIsModalOpen}
+          />
+        </Modal>
+      )}
     </section>
   );
 };

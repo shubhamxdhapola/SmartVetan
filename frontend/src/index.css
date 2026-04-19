@@ -145,15 +145,31 @@ h3,
 } */
 
 *::-webkit-scrollbar {
-  display: none;
+    display: none;
 }
 
 * {
-  scrollbar-width: none;
+    scrollbar-width: none;
 }
 
 .glass-card {
-  background: rgba(15, 25, 48, 0.6);
-  backdrop-filter: blur(12px);
-  -webkit-backdrop-filter: blur(12px);
+    background: rgba(15, 25, 48, 0.6);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+}
+
+/* Chrome, Safari, Edge */
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+
+/* Firefox */
+input[type="number"] {
+    -moz-appearance: textfield;
+}
+
+textarea {
+    resize: none;
 }

@@ -60,7 +60,7 @@ export const updateEmployee = createAsyncThunk(
 )
 
 export const deleteEmployee = createAsyncThunk(
-    'auth/google-signin',
+    'employee/delete',
     async (employeeId, { rejectWithValue }) => {
         try {
             const response = await axiosInstance.delete(
@@ -80,8 +80,14 @@ const employeeSlice = createSlice({
         employee: null,
         loading: false,
         error: null,
+        salaryHistory: [],
+        advanceHistory: []
     },
-    reducers: {},
+    reducers: {
+        resetEmployee: (state) => {
+            state.employee = null
+        }
+    },
     extraReducers: (builder) => {
         builder
             .addCase(getEmployees.pending, (state) => {
@@ -101,6 +107,8 @@ const employeeSlice = createSlice({
             .addCase(getEmployee.fulfilled, (state, action) => {
                 state.loading = false
                 state.employee = action?.payload?.employee
+                state.salaryHistory = action.payload?.salaryHistory
+                state.advanceHistory = action.payload?.advanceHistory
             })
             .addCase(getEmployee.rejected, (state, action) => {
                 state.error = action.payload
@@ -111,7 +119,7 @@ const employeeSlice = createSlice({
             })
             .addCase(addEmployee.fulfilled, (state, action) => {
                 state.loading = false
-                state.employee = action?.payload?.newEmployee
+                state.employees = [action?.payload?.newEmployee, ...state.employees]
             })
             .addCase(addEmployee.rejected, (state, action) => {
                 state.error = action.payload
@@ -122,12 +130,16 @@ const employeeSlice = createSlice({
             })
             .addCase(updateEmployee.fulfilled, (state, action) => {
                 state.loading = false
+                state.employee = action?.payload?.updatedEmployee
                 const updatedEmployee = action.payload?.updatedEmployee
-                const index = state.employees.findIndex(
-                    (employee) => employee._id === updatedEmployee._id
-                )
-                if (index !== -1) {
-                    state.employees[index] = updateEmployee
+                if (state.employees) {
+                    const index = state.employees?.findIndex(
+                        (employee) => employee._id === updatedEmployee._id
+                    )
+                    if (index !== -1) {
+                        console.log(updatedEmployee)
+                        state.employees[index] = updatedEmployee
+                    }
                 }
             })
             .addCase(updateEmployee.rejected, (state, action) => {
@@ -152,3 +164,4 @@ const employeeSlice = createSlice({
 })
 
 export default employeeSlice.reducer
+export const { resetEmployee } = employeeSlice.actions;

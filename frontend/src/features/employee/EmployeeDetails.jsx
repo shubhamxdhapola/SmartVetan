@@ -1,29 +1,35 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import DashboardLayout from "../../components/layouts/DashboardLayout";
-import EmployeeHero from "../../components/employee/EmployeeHero";
-import InfoGrid from "../../components/employee/InfoGrid";
-import HistoryGrid from "../../components/employee/HistoryGrid";
 import { useParams } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { getEmployee } from "../../store/slices/employee.slice";
+import { useDispatch, useSelector } from "react-redux";
+import { getEmployee, resetEmployee } from "../../store/slices/employee.slice";
+import ProfileCard from "../../components/employee/ProfileCard";
+import Tabs from "../../components/employee/Tabs";
+import SalaryHistory from "../../components/employee/SalaryHistory";
+import AdvanceHistory from "../../components/employee/AdvanceHistory";
+import ActionButtons from "../../components/employee/ActionButtons";
 
 const EmployeeDetails = () => {
-
   const { employeeId } = useParams();
-  console.log(employeeId)
-
+  const [activeTab, setActiveTab] = useState("salary");
+  const { loading } = useSelector((state) => state.employee);
   const dispatch = useDispatch();
+  
   useEffect(() => {
     dispatch(getEmployee(employeeId));
+    return () => {
+      dispatch(resetEmployee());
+    };
   }, [employeeId, dispatch]);
 
   return (
     <DashboardLayout activeMenu="Employees">
-      <div className="space-y-8">
-        <EmployeeHero />
-        <InfoGrid />
-        <HistoryGrid />
-      </div>
+      <ActionButtons />
+      <ProfileCard />
+      <section className="bg-surface-container-low rounded-2xl overflow-hidden shadow-2xl">
+        <Tabs activeTab={activeTab} setActiveTab={setActiveTab} />
+        {activeTab === "salary" ? <SalaryHistory /> : <AdvanceHistory />}
+      </section>
     </DashboardLayout>
   );
 };

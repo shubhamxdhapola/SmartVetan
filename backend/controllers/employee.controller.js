@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import Advance from "../models/advance.model.js";
 import Employee from "../models/employee.model.js";
 import SalaryRecord from "../models/salary.record.model.js";
@@ -13,6 +14,7 @@ export const getEmployees = async (req, res) => {
                     employerId: req.employer._id
                 }
             },
+            { $sort: { _id: -1 } },
             {
                 $lookup: {
                     from: "advances",
@@ -57,8 +59,8 @@ export const getEmployee = async (req, res) => {
         const { employeeId } = req.params;
         const employerId = req.employer._id;
 
-        const employee = await Employee.findOne({ 
-            _id: employeeId, employerId 
+        const employee = await Employee.findOne({
+            _id: employeeId, employerId
         }).lean();
 
         if (!employee) {
@@ -71,13 +73,52 @@ export const getEmployee = async (req, res) => {
             .sort({ createdAt: -1 })
             .lean();
 
-        const advanceHistory = await Advance.find({
-            employeeId,
-            employerId
-        })
-            .sort({ date: -1 })
-            .lean();
+        const advanceHistory = await Advance.aggregate([
+            {
+                $match: {
+                    employeeId: new mongoose.Types.ObjectId(employeeId),
+                    employerId: new mongoose.Types.ObjectId(employerId)
+                }
+            },
 
+            {
+                $sort: { date: -1 }
+            },
+
+
+            {
+                $group: {
+                    _id: {
+                        $dateToString: { format: "%Y-%m", date: "$date" } // e.g. 2024-10
+                    },
+                    advances: { $push: "$$ROOT" }, // will preserve sorted order
+                    totalAmount: { $sum: "$amount" }
+                }
+            },
+
+
+            {
+                $addFields: {
+                    month: {
+                        $dateToString: {
+                            format: "%b, %Y", // Oct, 2024
+                            date: { $toDate: { $concat: ["$_id", "-01"] } }
+                        }
+                    }
+                }
+            },
+            {
+                $sort: { _id: -1 }
+            },
+            {
+                $project: {
+                    _id: 0,
+                    month: 1,
+                    advances: 1,
+                    totalAmount: 1
+                }
+            },
+        ]);
         return res.status(200).json({
             employee,
             salaryHistory,
@@ -91,7 +132,7 @@ export const getEmployee = async (req, res) => {
 
 export const addEmployee = async (req, res) => {
     try {
-        const { name, phone, email, address, aadhar, salary, profilePic } = req.body;
+        const { name, phone, email, address, aadhar, salary, designation, profilePic, joiningDate } = req.body;
 
         if (!name || !phone || !aadhar) {
             return res.status(400).json({ message: "Name, phone and aadhar are required" });
@@ -119,7 +160,7 @@ export const addEmployee = async (req, res) => {
 
         const newEmployee = await Employee.create({
             employerId: req.employer._id,
-            name, phone, email, address, aadhar, salary, profilePic
+            name, phone, email, address, aadhar, designation, salary, profilePic, joiningDate
         })
 
         return res.status(201).json({
@@ -134,7 +175,7 @@ export const addEmployee = async (req, res) => {
 export const updateEmployee = async (req, res) => {
     try {
         const employeeId = req.params.employeeId;
-        const { name, phone, email, address, salary, profilePic } = req.body;
+        const { name, phone, email, address, salary, profilePic, designation, joiningDate } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(employeeId)) {
             return res.status(400).json({ message: "Invalid employee id" });
@@ -165,12 +206,14 @@ export const updateEmployee = async (req, res) => {
         if (email) updates.email = email
         if (address) updates.address = address
         if (salary) updates.salary = salary
+        if (joiningDate) updates.joiningDate = joiningDate
+        if (designation) updates.designation = designation
         if (profilePic || profilePic == null) updates.profilePic = profilePic
 
         const updatedEmployee = await Employee.findOneAndUpdate(
             { _id: employeeId, employerId: req.employer._id },
             updates,
-            { runValidators: true, new: true }
+            { runValidators: true, returnDocument: 'after' }
         )
 
         return res.status(200).json({
