@@ -64,28 +64,28 @@ const runSeed = async () => {
                 employerId,
                 employeeId: createdEmployees[0]._id, // Rahul
                 amount: 5000,
-                note: "Medical emergency",
+                reason: "Medical emergency",
                 date: new Date("2026-01-10T10:00:00Z")
             },
             {
                 employerId,
                 employeeId: createdEmployees[0]._id, // Rahul
                 amount: 2000,
-                note: "Personal",
+                reason: "Personal",
                 date: new Date("2026-01-25T10:00:00Z")
             },
             {
                 employerId,
                 employeeId: createdEmployees[1]._id, // Amit
                 amount: 10000,
-                note: "Family event",
+                reason: "Family event",
                 date: new Date("2026-01-15T12:00:00Z")
             },
             {
                 employerId,
                 employeeId: createdEmployees[2]._id, // Suresh
                 amount: 3000,
-                note: "Travel expenses",
+                reason: "Travel expenses",
                 date: new Date("2026-01-20T09:00:00Z")
             },
             // Feb 2026 Advances
@@ -93,14 +93,14 @@ const runSeed = async () => {
                 employerId,
                 employeeId: createdEmployees[0]._id, // Rahul
                 amount: 1500,
-                note: "Miscellaneous",
+                reason: "Miscellaneous",
                 date: new Date("2026-02-05T09:00:00Z")
             },
             {
                 employerId,
                 employeeId: createdEmployees[2]._id, // Suresh
                 amount: 5000,
-                note: "Repair",
+                reason: "Repair",
                 date: new Date("2026-02-14T09:00:00Z")
             }
         ];

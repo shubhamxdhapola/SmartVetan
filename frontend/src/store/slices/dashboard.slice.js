@@ -37,6 +37,7 @@ const dashboardSlice = createSlice({
         currentMonth: null,
         customMonth: null,
         recentAdvances: null,
+        dailyAdvances: null,
         loading: true,
         customMonthLoading: false,
         error: null,
@@ -52,6 +53,7 @@ const dashboardSlice = createSlice({
                 state.currentMonth = action?.payload?.currentMonthStats
                 state.customMonth = action?.payload?.prevMonthStats
                 state.recentAdvances = action?.payload?.recentAdvances
+                state.dailyAdvances = action?.payload?.dailyAdvances
             })
             .addCase(getDashboardData.rejected, (state, action) => {
                 state.error = action.payload

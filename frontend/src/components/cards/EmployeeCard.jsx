@@ -6,16 +6,12 @@ export default function EmployeeCard({ employee }) {
 
   // Determine specific classes based on whether the card is "Featured" or not
   const wrapperClass = isFeatured
-    ? "glass-card rounded-lg p-6 border-2 border-primary/50 shadow-2xl shadow-primary/10 group bg-surface-container-high"
-    : "glass-card rounded-lg p-6 border border-outline-variant/10 hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 group";
+    ? "relative glass-card rounded-lg p-6 border-2 border-primary/50 shadow-2xl shadow-primary/10 group bg-surface-container-high"
+    : "relative glass-card rounded-lg p-6 border border-outline-variant/10 hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 group";
 
   const imgBorderClass = isFeatured
     ? "border-primary/40"
     : "border-outline-variant/20";
-
-  const editBtnClass = isFeatured
-    ? "bg-primary/20 text-primary"
-    : "bg-surface-bright/50 text-on-surface-variant hover:text-primary";
 
   const roleTextClass = isFeatured
     ? "text-primary font-bold"
@@ -35,8 +31,9 @@ export default function EmployeeCard({ employee }) {
 
   return (
     <div className={wrapperClass}>
-      <div className="flex items-start justify-between mb-6">
-        <div className="relative">
+      {/* Photo + Info Row */}
+      <div className="flex items-start gap-5 mb-6">
+        <div className="relative flex-shrink-0">
           {/* Subtle glow effect for normal cards on hover */}
           {!isFeatured && (
             <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
@@ -44,22 +41,28 @@ export default function EmployeeCard({ employee }) {
           {employee.profilePic ? (
             <img
               alt={`${employee.name} Portrait`}
-              className={`relative w-20 h-20 rounded-lg object-cover border-2 shadow-lg ${imgBorderClass}`}
+              className={`relative w-16 h-16 rounded-xl object-cover border-2 shadow-lg ${imgBorderClass}`}
               src={employee.profilePic}
             />
           ) : (
-            <div className="w-20 h-20 rounded-lg bg-surface-container-low flex justify-center items-center text-lg">
-              <span>{employee.name.split("")[0]}</span>
+            <div className="w-16 h-16 rounded-xl bg-gradient-to-br from-primary-dim to-primary flex justify-center items-center text-xl font-black text-white">
+              <span>{employee.name[0]}</span>
             </div>
           )}
+
+          {/* Status Indicator Dot */}
+          <div className={`absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-surface z-10 ${employee.isActive !== false
+              ? 'bg-green-400'
+              : 'bg-error'
+            }`}></div>
 
           {/* Custom Bottom-Right Badge */}
           {employee.badge && (
             <div
-              className={`absolute -bottom-2 -right-2 w-8 h-8 ${employee.badge.bgClass} ${employee.badge.textClass} rounded-full flex items-center justify-center shadow-lg border-4 border-surface`}
+              className={`absolute -bottom-2 -right-2 w-7 h-7 ${employee.badge.bgClass} ${employee.badge.textClass} rounded-full flex items-center justify-center shadow-lg border-4 border-surface`}
             >
               <span
-                className="material-symbols-outlined text-sm"
+                className="material-symbols-outlined text-xs"
                 style={{ fontVariationSettings: '"FILL" 1' }}
               >
                 {employee.badge.icon}
@@ -74,33 +77,30 @@ export default function EmployeeCard({ employee }) {
             </div>
           )}
         </div>
-        <button className={`p-2 rounded-lg transition-colors ${editBtnClass}`}>
-          <span className="material-symbols-outlined">edit</span>
-        </button>
-      </div>
 
-      <div className="mb-6">
-        <h3 className="text-xl font-bold text-on-surface mb-0.5">
-          {employee.name}
-        </h3>
-        <p className={`text-sm ${roleTextClass}`}>{employee.designation}</p>
-      </div>
-
-      <div className="space-y-4 mb-8">
-        <div className="flex items-center gap-3 text-on-surface-variant">
-          <span className="material-symbols-outlined text-sm">call</span>
-          <span className="text-xs font-mono tracking-wider">
-            {employee.phone}
-          </span>
+        {/* Info */}
+        <div className="min-w-0 flex-1 pt-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-1 mb-1.5">
+            <h3 className="text-lg font-bold text-on-surface leading-tight">
+              {employee.name}
+            </h3>
+            <p className={`text-sm leading-snug ${roleTextClass}`}>
+              {employee.designation}
+            </p>
+          </div>
+          <p className="text-[10px] text-on-surface-variant font-bold tracking-widest uppercase">
+            EMP-{employee._id.slice(-4).toUpperCase()}
+          </p>
         </div>
+      </div>
+
+      <div className="space-y-4 mb-6">
         <div className={`p-4 rounded-lg border ${advanceWrapperClass}`}>
-          <p
-            className={`text-[10px] uppercase tracking-widest mb-1 ${advanceLabelClass}`}
-          >
+          <p className={`text-[10px] uppercase tracking-widest mb-1 ${advanceLabelClass}`}>
             Total Advance Taken
           </p>
           <p className="text-2xl font-black text-on-surface">
-            {employee.totalMonthlyAdvance || 0}
+            ₹ {(employee.totalMonthlyAdvance || 0).toLocaleString('en-IN')}
           </p>
         </div>
       </div>

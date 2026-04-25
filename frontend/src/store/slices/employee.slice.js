@@ -73,12 +73,28 @@ export const deleteEmployee = createAsyncThunk(
     }
 )
 
+export const searchEmployee = createAsyncThunk(
+    'employee/search',
+    async (searchQuery, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.get(
+                API_PATHS.EMPLOYEE.SEARCH(searchQuery)
+            )
+            return response?.data
+        } catch (error) {
+            return rejectWithValue(error?.response?.data)
+        }
+    }
+)
+
 const employeeSlice = createSlice({
     name: 'employee',
     initialState: {
         employees: null,
         employee: null,
+        searchEmployees: [],
         loading: false,
+        searchLoading: false,
         error: null,
         salaryHistory: [],
         advanceHistory: []
@@ -137,7 +153,6 @@ const employeeSlice = createSlice({
                         (employee) => employee._id === updatedEmployee._id
                     )
                     if (index !== -1) {
-                        console.log(updatedEmployee)
                         state.employees[index] = updatedEmployee
                     }
                 }
@@ -151,13 +166,26 @@ const employeeSlice = createSlice({
             })
             .addCase(deleteEmployee.fulfilled, (state, action) => {
                 state.loading = false
-                state.employees = state.employees.filter(
-                    (employee) => employee._id !== action.payload
-                )
+                if (state.employees) {
+                    state.employees = state.employees.filter(
+                        (employee) => employee._id !== action.payload
+                    )
+                }
             })
             .addCase(deleteEmployee.rejected, (state, action) => {
                 state.error = action.payload
                 state.loading = false
+            })
+            .addCase(searchEmployee.pending, (state) => {
+                state.searchLoading = true
+            })
+            .addCase(searchEmployee.fulfilled, (state, action) => {
+                state.searchLoading = false
+                state.searchEmployees = action?.payload?.employees ?? []
+            })
+            .addCase(searchEmployee.rejected, (state, action) => {
+                state.error = action.payload
+                state.searchLoading = false
             })
 
     }

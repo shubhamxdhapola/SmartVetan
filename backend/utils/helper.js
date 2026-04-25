@@ -102,3 +102,48 @@ export const getRecentAdvances = async (employerId) => {
     ]);
 
 }
+
+export const getDailyAdvancesForMonth = async (month, employerId) => {
+    const [year, monthNumber] = month.split('-').map(Number);
+    const start = new Date(Date.UTC(year, monthNumber - 1, 1));
+    const end = new Date(Date.UTC(year, monthNumber, 1));
+
+    const dailyAdvances = await Advance.aggregate([
+        {
+            $match: {
+                employerId,
+                date: { $gte: start, $lt: end }
+            }
+        },
+        {
+            $group: {
+                _id: { $dayOfMonth: "$date" },
+                amount: { $sum: "$amount" }
+            }
+        },
+        { $sort: { "_id": 1 } }
+    ]);
+
+    // Format into an array from day 1 to current day (or end of month)
+    const now = new Date();
+    // If it's the current month, fill up to today. If historical, fill up to end of month.
+    let lastDay = new Date(year, monthNumber, 0).getDate();
+    if (now.getUTCFullYear() === year && (now.getUTCMonth() + 1) === monthNumber) {
+        lastDay = now.getUTCDate();
+    }
+
+    const chartData = [];
+    let advanceMap = {};
+    dailyAdvances.forEach(item => {
+        advanceMap[item._id] = item.amount;
+    });
+
+    for (let i = 1; i <= lastDay; i++) {
+        chartData.push({
+            day: i,
+            amount: advanceMap[i] || 0
+        });
+    }
+
+    return chartData;
+};

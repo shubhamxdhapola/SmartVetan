@@ -43,7 +43,7 @@ const ProfilePhotoSelector = ({ profileImg, setFormData }) => {
   };
 
   return (
-    <div className="flex flex-col md:flex-row gap-8 items-start pb-4 border-b border-outline-variant/10">
+    <div className="flex-shrink-0 self-center mt-5">
       <input
         type="file"
         accept="image/*"
@@ -57,11 +57,10 @@ const ProfilePhotoSelector = ({ profileImg, setFormData }) => {
           <>
             <div
               onClick={!(uploading || loading) ? onChooseFile : undefined}
-              className={`w-32 h-32 rounded-sm bg-[#030712] border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center transition-colors overflow-hidden boxy ${
-                uploading || loading
-                  ? "opacity-70 cursor-not-allowed"
-                  : "cursor-pointer group-hover:border-primary/50"
-              }`}
+              className={`w-36 h-36 rounded-xl bg-surface-container-low border-2 border-dashed border-outline-variant/30 flex flex-col items-center justify-center transition-colors overflow-hidden boxy ${uploading || loading
+                ? "opacity-70 cursor-not-allowed"
+                : "cursor-pointer group-hover:border-primary/50"
+                }`}
             >
               {uploading ? (
                 <span
@@ -120,7 +119,7 @@ const ProfilePhotoSelector = ({ profileImg, setFormData }) => {
             <img
               src={profilePic}
               alt="Profile Photo"
-              className="w-32 h-32 rounded-sm object-cover border border-outline-variant/30 boxy"
+              className="w-36 h-36 rounded-xl object-cover border border-outline-variant/30 boxy shadow-lg"
             />
             <button
               type="button"
@@ -139,15 +138,7 @@ const ProfilePhotoSelector = ({ profileImg, setFormData }) => {
         )}
       </div>
 
-      <div className="flex-1 space-y-2 py-2">
-        <h4 className="font-headline font-bold text-on-surface">
-          Profile Picture
-        </h4>
-        <p className="text-sm text-on-surface-variant max-w-sm leading-relaxed">
-          Please provide a professional headshot. JPEG or PNG, max 5MB. This
-          will be visible on payroll slips and identity cards.
-        </p>
-      </div>
+
     </div>
   );
 };

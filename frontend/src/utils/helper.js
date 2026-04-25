@@ -58,6 +58,15 @@ export const getDate = () => {
     })
 }
 
+export const formatDate = (date) => {
+    if (!date) return "—"
+    return new Date(date).toLocaleDateString("en-IN", {
+        day: "numeric",
+        month: "short",
+        year: "numeric",
+    })
+}
+
 export const getTime = () => {
     const now = new Date();
     const formattedTime = now.toLocaleTimeString('en-IN', {
@@ -79,5 +88,13 @@ export const validateEmployeeForm = (name, phone, email, salary, aadhar) => {
     if (Number(salary) <= 0) return toast.error("Salary should be greater than 0")
     if (email && !/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(email))
         return toast.error("Invalid email format");
+    return true
+}
+
+export const validateAdvanceForm = (employeeId, amount, reason) => {
+    if (!employeeId) return toast.error("Please select an employee")
+    if (!amount) return toast.error("Amount is required")
+    if (Number(amount) <= 0) return toast.error("Amount should be greater than 0")
+    if (!reason.trim()) return toast.error("Reason is required")
     return true
 }

@@ -156,3 +156,39 @@ export const googleSignin = async (req, res) => {
         return res.status(500).json({ message: "Internal server error" })
     }
 }
+
+export const updateEmployerProfile = async (req, res) => {
+    try {
+        const { name, email, organization, profileImage } = req.body;
+        const employerId = req.employer._id;
+
+        const employer = await Employer.findById(employerId);
+        if (!employer) {
+            return res.status(404).json({ message: "Employer not found" });
+        }
+
+        if (name) employer.name = name;
+        if (email) employer.email = email;
+        if (organization !== undefined) employer.organization = organization;
+        if (profileImage !== undefined) employer.profileImage = profileImage;
+
+        await employer.save();
+
+        return res.status(200).json({
+            employer: {
+                id: employer._id,
+                name: employer.name,
+                email: employer.email,
+                profileImage: employer.profileImage,
+                organization: employer.organization,
+                createdAt: employer.createdAt
+            },
+            message: "Profile updated successfully"
+        });
+
+    } catch (error) {
+        console.log("Error in updateEmployerProfile controller : ", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+

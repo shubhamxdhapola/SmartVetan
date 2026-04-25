@@ -3,16 +3,24 @@ import { IoMdSearch, IoMdSettings } from "react-icons/io";
 import { FiLogOut } from "react-icons/fi";
 import { IoSearch } from "react-icons/io5";
 import { MdToken } from "react-icons/md";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { searchEmployee } from "../../store/slices/employee.slice";
 
 const TopNavBar = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { employer } = useSelector((state) => state.auth);
+  const { searchEmployees, searchLoading } = useSelector((state) => state.employee);
+  
   const [showSearchBar, setShowSearchBar] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
   const searchBarRef = useRef(null);
 
   const hideSearchBar = (e) => {
     if (searchBarRef.current && !searchBarRef.current.contains(e.target)) {
       setShowSearchBar(false);
+      setSearchQuery(""); // Optionally clear search on click outside
     }
   };
 
@@ -23,20 +31,70 @@ const TopNavBar = () => {
     };
   });
 
+  useEffect(() => {
+    const delayDebounceFn = setTimeout(() => {
+      if (searchQuery.trim()) {
+        dispatch(searchEmployee(searchQuery));
+      }
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, dispatch]);
+
+  const handleEmployeeClick = (id) => {
+    setSearchQuery("");
+    setShowSearchBar(false);
+    navigate(`/employees/${id}`);
+  };
+
   return (
     <header
       className={`fixed ${showSearchBar ? "-top-100" : "top-0"} right-0 left-0 md:left-65 xl:left-76 z-40 bg-[#060e20] flex justify-between items-center px-4 py-4 transition-all flex-col-reverse md:flex-row gap-4 duration-300`}
     >
       <div
-        className={`flex items-center gap-4 bg-[#091328] px-4 py-3 rounded-md w-[95%] border border-outline-variant/10 md:static fixed ${showSearchBar ? "top-3" : "-top-20"} transition-all duration-300`}
+        className={`relative flex items-center gap-4 bg-[#091328] px-4 py-3 rounded-md w-[95%] md:w-full max-w-md border border-outline-variant/10 md:relative fixed ${showSearchBar ? "top-3" : "-top-20"} md:top-0 transition-all duration-300`}
         ref={searchBarRef}
       >
         <IoMdSearch className="size-5" />
         <input
           className="bg-transparent border-none focus:ring-0 text-sm w-full h-inherit focus:outline-none placeholder:text-on-surface-variant/50"
-          placeholder="Search transactions or employees..."
+          placeholder="Search employees..."
           type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
         />
+        {/* Search Results Dropdown */}
+        {searchQuery.trim().length > 0 && (
+          <div className="absolute top-full left-0 right-0 mt-2 bg-surface-container-high border border-outline-variant/10 rounded-xl overflow-hidden shadow-2xl z-50 max-h-80 overflow-y-auto">
+            {searchLoading ? (
+              <div className="p-4 text-center text-sm text-on-surface-variant">Searching...</div>
+            ) : searchEmployees?.length > 0 ? (
+              <ul>
+                {searchEmployees.map((emp) => (
+                  <li 
+                    key={emp._id}
+                    onClick={() => handleEmployeeClick(emp._id)}
+                    className="px-4 py-3 hover:bg-surface-bright cursor-pointer flex items-center gap-3 border-b border-outline-variant/5 last:border-b-0 transition-colors"
+                  >
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center overflow-hidden shrink-0">
+                      {emp.profilePic ? (
+                        <img src={emp.profilePic} alt={emp.name} className="w-full h-full object-cover" />
+                      ) : (
+                        <span className="text-xs font-bold text-primary">{emp.name[0]}</span>
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-on-surface truncate">{emp.name}</p>
+                      <p className="text-[10px] text-on-surface-variant uppercase tracking-wider">{emp.designation}</p>
+                    </div>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <div className="p-4 text-center text-sm text-on-surface-variant">No employees found</div>
+            )}
+          </div>
+        )}
       </div>
 
       <div

@@ -1,18 +1,114 @@
 import mongoose from "mongoose";
 import Advance from "../models/advance.model.js";
 import SalaryRecord from '../models/salary.record.model.js'
+import Employee from "../models/employee.model.js";
 
+// ─── GET /api/advance?month=YYYY-MM ──────────────────────────────────────────
 export const getAdvances = async (req, res) => {
     try {
         const employerId = req.employer._id;
-        const advances = await Advance.find({ employerId }).sort({ date: -1 })
-        return res.status(200).json({ advances })
+        const { month } = req.query;
+
+        let query = { employerId };
+
+        if (month) {
+            const monthRegex = /^\d{4}-(0[1-9]|1[0-2])$/;
+            if (!monthRegex.test(month)) {
+                return res.status(400).json({ message: "Month must be in YYYY-MM format" });
+            }
+            const [year, monthNum] = month.split('-').map(Number);
+            const start = new Date(Date.UTC(year, monthNum - 1, 1));
+            const end = new Date(Date.UTC(year, monthNum, 1));
+            query.date = { $gte: start, $lt: end };
+        }
+
+        const advances = await Advance.find(query)
+            .populate('employeeId', 'name profilePic designation')
+            .sort({ date: -1 });
+
+        return res.status(200).json({ advances: advances.map(a => a.toObject()) });
+
     } catch (error) {
-        console.log("Error in getAdvances controller : ", error)
-        return res.status(500).json({ message: "Internal server error" })
+        console.log("Error in getAdvances controller : ", error);
+        return res.status(500).json({ message: "Internal server error" });
     }
 }
 
+// ─── GET /api/advance/stats?month=YYYY-MM ────────────────────────────────────
+export const getAdvanceStats = async (req, res) => {
+    try {
+        const employerId = req.employer._id;
+        const { month } = req.query;
+
+        if (!month) return res.status(400).json({ message: "Month is required" });
+
+        const monthRegex = /^\d{4}-(0[1-9]|1[0-2])$/;
+        if (!monthRegex.test(month)) {
+            return res.status(400).json({ message: "Month must be in YYYY-MM format" });
+        }
+
+        const [year, monthNum] = month.split('-').map(Number);
+        const start = new Date(Date.UTC(year, monthNum - 1, 1));
+        const end = new Date(Date.UTC(year, monthNum, 1));
+
+        const [advanceAgg, salaryRecordAgg, currentSalaryAgg] = await Promise.all([
+            Advance.aggregate([
+                {
+                    $match: {
+                        employerId,
+                        date: { $gte: start, $lt: end }
+                    }
+                },
+                {
+                    $group: {
+                        _id: null,
+                        totalAdvance: { $sum: "$amount" },
+                        uniqueEmployees: { $addToSet: "$employeeId" }
+                    }
+                },
+                {
+                    $project: {
+                        totalAdvance: 1,
+                        employeesWithAdvance: { $size: "$uniqueEmployees" }
+                    }
+                }
+            ]),
+            // Use actual salary from SalaryRecord for the selected month
+            SalaryRecord.aggregate([
+                { $match: { employerId, month } },
+                { $group: { _id: null, totalSalary: { $sum: "$totalSalary" } } }
+            ]),
+            // Fallback: current employee salaries (used when no salary records exist yet)
+            Employee.aggregate([
+                { $match: { employerId, isActive: true } },
+                { $group: { _id: null, totalSalary: { $sum: "$salary" } } }
+            ])
+        ]);
+
+        const totalAdvance = advanceAgg[0]?.totalAdvance || 0;
+        const employeesWithAdvance = advanceAgg[0]?.employeesWithAdvance || 0;
+
+        // Prefer SalaryRecord-based salary (actual historical figure),
+        // fall back to current employee salary sum if payroll hasn't been run yet
+        const totalSalary =
+            salaryRecordAgg[0]?.totalSalary ?? currentSalaryAgg[0]?.totalSalary ?? 0;
+
+        const totalSalaryToBePaid = totalSalary - totalAdvance;
+
+        return res.status(200).json({
+            stats: {
+                totalAdvance,
+                employeesWithAdvance,
+                totalSalaryToBePaid
+            }
+        });
+    } catch (error) {
+        console.log("Error in getAdvanceStats controller : ", error);
+        return res.status(500).json({ message: "Internal server error" });
+    }
+}
+
+// ─── GET /api/employee/:employeeId/advance ───────────────────────────────────
 export const getEmployeeAdvances = async (req, res) => {
     try {
         const employerId = req.employer._id;
@@ -23,6 +119,9 @@ export const getEmployeeAdvances = async (req, res) => {
         }
 
         const advances = await Advance.find({ employeeId, employerId })
+            .populate('employeeId', 'name profilePic designation')
+            .sort({ date: -1 });
+
         return res.status(200).json({ advances })
 
     } catch (error) {
@@ -31,12 +130,13 @@ export const getEmployeeAdvances = async (req, res) => {
     }
 }
 
+// ─── POST /api/employee/:employeeId/advance ───────────────────────────────────
 export const addAdvance = async (req, res) => {
     try {
         const employerId = req.employer._id
         const employeeId = req.params.employeeId
 
-        const { amount, note, date } = req.body
+        const { amount, reason, date } = req.body
 
         if (!mongoose.Types.ObjectId.isValid(employeeId)) {
             return res.status(400).json({ message: "Invalid employee id" });
@@ -48,9 +148,23 @@ export const addAdvance = async (req, res) => {
             })
         }
 
+        // Reject future dates — compare against start of today (UTC)
+        if (date) {
+            const advanceDate = new Date(date)
+            const todayStart = new Date()
+            todayStart.setUTCHours(0, 0, 0, 0)
+            if (advanceDate > todayStart) {
+                return res.status(400).json({
+                    message: "Advance date cannot be in the future"
+                })
+            }
+        }
+
         let advance = await Advance.create({
-            employerId, employeeId, amount, note, date
+            employerId, employeeId, amount, reason, date
         })
+
+        advance = await advance.populate('employeeId', 'name profilePic designation')
 
         return res.status(201).json({
             advance, message: "Advance added successfully"
@@ -62,11 +176,12 @@ export const addAdvance = async (req, res) => {
     }
 }
 
+// ─── PATCH /api/advance/:advanceId ───────────────────────────────────────────
 export const updateAdvance = async (req, res) => {
     try {
         const id = req.params.advanceId
         const employerId = req.employer._id
-        const { amount, note, date } = req.body
+        const { amount, reason, date } = req.body
 
         if (!mongoose.Types.ObjectId.isValid(id)) {
             return res.status(400).json({ message: "Invalid advance id" });
@@ -92,14 +207,14 @@ export const updateAdvance = async (req, res) => {
 
         const updates = {}
         if (amount) updates.amount = amount
-        if (note) updates.note = note
+        if (reason) updates.reason = reason
         if (date) updates.date = date
 
         const updatedAdvance = await Advance.findOneAndUpdate(
             { _id: id, employerId },
             updates,
             { runValidators: true, new: true }
-        )
+        ).populate('employeeId', 'name profilePic designation')
 
         return res.status(200).json({
             updatedAdvance, message: "Advance updated successfully"
@@ -111,6 +226,7 @@ export const updateAdvance = async (req, res) => {
     }
 }
 
+// ─── DELETE /api/advance/:advanceId ──────────────────────────────────────────
 export const deleteAdvance = async (req, res) => {
     try {
         const id = req.params.advanceId
@@ -142,6 +258,6 @@ export const deleteAdvance = async (req, res) => {
 
     } catch (error) {
         console.log("Error in deleteAdvance controller : ", error)
-        return res.status(500).json({ messge: "Internal sever error" })
+        return res.status(500).json({ message: "Internal server error" })
     }
 }

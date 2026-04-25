@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { mongo } from "mongoose";
 import Advance from "../models/advance.model.js";
 import Employee from "../models/employee.model.js";
 import SalaryRecord from "../models/salary.record.model.js";
@@ -11,7 +11,7 @@ export const getEmployees = async (req, res) => {
         const employees = await Employee.aggregate([
             {
                 $match: {
-                    employerId: req.employer._id
+                    employerId: new mongoose.Types.ObjectId(req.employer._id)
                 }
             },
             { $sort: { _id: -1 } },
@@ -57,7 +57,7 @@ export const getEmployees = async (req, res) => {
 export const getEmployee = async (req, res) => {
     try {
         const { employeeId } = req.params;
-        const employerId = req.employer._id;
+        const employerId = new mongoose.Types.ObjectId(req.employer._id);
 
         const employee = await Employee.findOne({
             _id: employeeId, employerId
@@ -175,7 +175,7 @@ export const addEmployee = async (req, res) => {
 export const updateEmployee = async (req, res) => {
     try {
         const employeeId = req.params.employeeId;
-        const { name, phone, email, address, salary, profilePic, designation, joiningDate } = req.body;
+        const { name, phone, email, address, salary, profilePic, designation, joiningDate, isActive } = req.body;
 
         if (!mongoose.Types.ObjectId.isValid(employeeId)) {
             return res.status(400).json({ message: "Invalid employee id" });
@@ -209,6 +209,7 @@ export const updateEmployee = async (req, res) => {
         if (joiningDate) updates.joiningDate = joiningDate
         if (designation) updates.designation = designation
         if (profilePic || profilePic == null) updates.profilePic = profilePic
+        if (isActive !== undefined) updates.isActive = isActive;
 
         const updatedEmployee = await Employee.findOneAndUpdate(
             { _id: employeeId, employerId: req.employer._id },
@@ -242,6 +243,26 @@ export const deleteEmployee = async (req, res) => {
         return res.status(200).json({ message: "Employee deleted successfully" })
     } catch (error) {
         console.log("Error in deleteEmployee controller : ", error)
+        return res.status(500).json({ message: "Internal server error" })
+    }
+}
+
+export const searchEmployee = async (req, res) => {
+    try {
+
+        const { query } = req.query;
+
+        if (!query) {
+            return res.status(400).json({ message: "Search query is required" });
+        }
+        const employees = await Employee.find({
+            employerId: new mongoose.Types.ObjectId(req.employer._id),
+            name: { $regex: query, $options: "i" },
+        }).select({ name: 1, designation: 1, profilePic: 1 }).limit(6);
+
+        return res.status(200).json({ employees });
+    } catch (error) {
+        console.log("Error in searchEmployee controller : ", error)
         return res.status(500).json({ message: "Internal server error" })
     }
 }

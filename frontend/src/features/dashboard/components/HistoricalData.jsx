@@ -5,6 +5,7 @@ import { MdExpandMore } from "react-icons/md";
 import { getHistoricalData } from "../../../store/slices/dashboard.slice";
 import HistoricalDataStatsCard from "../../../components/cards/HistoricalDataStatsCard";
 import Skeleton from "react-loading-skeleton";
+import DashboardCharts from "./DashboardCharts";
 
 const HistoricalData = () => {
   const { customMonth, customMonthLoading, loading } = useSelector(
@@ -25,25 +26,25 @@ const HistoricalData = () => {
     { label: "Employees", value: customMonth?.employees },
     {
       label: "Advance",
-      value: "₹ " + customMonth?.advance.toLocaleString("en-IN"),
+      value: "₹ " + (customMonth?.advance || 0).toLocaleString("en-IN"),
     },
     {
       label: "Total Salary",
-      value: "₹ " + customMonth?.totalSalary.toLocaleString("en-IN"),
+      value: "₹ " + (customMonth?.totalSalary || 0).toLocaleString("en-IN"),
     },
     {
       label: "Payable",
-      value: "₹ " + customMonth?.payable.toLocaleString("en-IN"),
+      value: "₹ " + (customMonth?.payable || 0).toLocaleString("en-IN"),
       color: "text-secondary",
     },
     {
       label: "Paid Amount",
-      value: "₹ " + customMonth?.paidAmount.toLocaleString("en-IN"),
+      value: "₹ " + (customMonth?.paidAmount || 0).toLocaleString("en-IN"),
       color: "text-primary",
     },
     {
       label: "Pending",
-      value: "₹ " + customMonth?.pendingAmount.toLocaleString("en-IN"),
+      value: "₹ " + (customMonth?.pendingAmount || 0).toLocaleString("en-IN"),
       color: "text-error",
     },
     { label: "Paid Staff", value: customMonth?.paidStaff },
@@ -93,7 +94,7 @@ const HistoricalData = () => {
           </button>
         </div>
       </div>
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {DATA.map(({ label, color, value }, index) =>
           customMonthLoading || loading ? (
             <Skeleton
@@ -113,6 +114,7 @@ const HistoricalData = () => {
           ),
         )}
       </div>
+      <DashboardCharts />
     </section>
   );
 };

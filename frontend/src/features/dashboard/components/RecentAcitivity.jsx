@@ -6,7 +6,7 @@ const TABLE_HEADINGS = [
   "Employee",
   "Designation",
   "Base Salary",
-  "Total Salary",
+  "Total Advance",
   "Latest Advance",
   "Net Payable",
 ];
@@ -41,72 +41,72 @@ const RecentAcitivity = () => {
             <tbody className="divide-y divide-outline-variant/5">
               {loading
                 ? [...Array(3)].map((_, i) => (
-                    <tr
-                      key={`row-${i}`}
-                      className="hover:bg-surface-bright/30 transition-colors space-x-4"
-                    >
-                      {[...Array(6)].map((_, j) => (
-                        <td className="px-4 py-4">
-                          <Skeleton
-                            key={`cell-${j}`}
-                            height="20px"
-                            borderRadius={3}
-                            baseColor="#141f38"
-                            highlightColor="#1f2b49"
-                          />
-                        </td>
-                      ))}
-                    </tr>
-                  ))
+                  <tr
+                    key={`row-${i}`}
+                    className="hover:bg-surface-bright/30 transition-colors space-x-4"
+                  >
+                    {[...Array(6)].map((_, j) => (
+                      <td className="px-4 py-4">
+                        <Skeleton
+                          key={`cell-${j}`}
+                          height="20px"
+                          borderRadius={3}
+                          baseColor="#141f38"
+                          highlightColor="#1f2b49"
+                        />
+                      </td>
+                    ))}
+                  </tr>
+                ))
                 : recentAdvances?.slice(startIndex, endIndex)?.map((item) => (
-                    <tr
-                      key={item?.empId}
-                      className="hover:bg-surface-bright/30 transition-colors"
-                    >
-                      <td className="px-6 py-4">
-                        <div className="flex items-center gap-3">
-                          <div
-                            className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold border border-primary/30 overflow-hidden bg-surface-container-highest`}
-                          >
-                            {item?.empProfilePic ? (
-                              <img
-                                alt="User profile avatar"
-                                className="w-full h-full object-cover"
-                                src={item?.empProfilePic}
-                              />
-                            ) : (
-                              item?.empName.split("")[0]
-                            )}
-                          </div>
-                          <div>
-                            <p className="text-sm font-semibold whitespace-nowrap">
-                              {item.empName}
-                            </p>
-                            <p className="text-xs text-on-surface-variant">
-                              SV-{item.empId.slice(-3).toUpperCase()}
-                            </p>
-                          </div>
+                  <tr
+                    key={item?.empId}
+                    className="hover:bg-surface-bright/30 transition-colors"
+                  >
+                    <td className="px-6 py-4">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className={`h-9 w-9 rounded-full flex items-center justify-center text-xs font-bold border border-primary/30 overflow-hidden bg-surface-container-highest`}
+                        >
+                          {item?.empProfilePic ? (
+                            <img
+                              alt="User profile avatar"
+                              className="w-full h-full object-cover"
+                              src={item?.empProfilePic}
+                            />
+                          ) : (
+                            item?.empName.split("")[0]
+                          )}
                         </div>
-                      </td>
-                      <td className="px-6 py-4 text-sm whitespace-nowrap">
-                        {item?.designation || " N/A "}{" "}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-['Manrope'] whitespace-nowrap">
-                        ₹ {item.empSalary.toLocaleString("en-IN")}
-                      </td>
-                      <td
-                        className={`px-6 py-4 text-sm font-['Manrope'] whitespace-nowrap ${item.advance !== "₹ 0" ? "text-error" : "text-on-surface-variant"}`}
-                      >
-                        ₹ {item.totalAdvance.toLocaleString("en-IN")}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold font-['Manrope'] whitespace-nowrap">
-                        ₹ {item.latestAdvance.toLocaleString("en-IN")}
-                      </td>
-                      <td className="px-6 py-4 text-sm font-bold font-['Manrope'] whitespace-nowrap">
-                        ₹ {item?.netPayable.toLocaleString("en-IN")}
-                      </td>
-                    </tr>
-                  ))}
+                        <div>
+                          <p className="text-sm font-semibold whitespace-nowrap">
+                            {item.empName}
+                          </p>
+                          <p className="text-xs text-on-surface-variant">
+                            EMP-{item.empId.slice(-3).toUpperCase()}
+                          </p>
+                        </div>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-sm whitespace-nowrap">
+                      {item?.designation || " N/A "}{" "}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-['Manrope'] whitespace-nowrap">
+                      ₹ {item.empSalary.toLocaleString("en-IN")}
+                    </td>
+                    <td
+                      className={`px-6 py-4 text-sm font-['Manrope'] whitespace-nowrap ${item.advance !== "₹ 0" ? "text-error" : "text-on-surface-variant"}`}
+                    >
+                      ₹ {item.totalAdvance.toLocaleString("en-IN")}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold font-['Manrope'] whitespace-nowrap">
+                      ₹ {item.latestAdvance.toLocaleString("en-IN")}
+                    </td>
+                    <td className="px-6 py-4 text-sm font-bold font-['Manrope'] whitespace-nowrap">
+                      ₹ {item?.netPayable.toLocaleString("en-IN")}
+                    </td>
+                  </tr>
+                ))}
             </tbody>
           </table>
         </div>

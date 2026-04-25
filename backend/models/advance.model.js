@@ -18,7 +18,7 @@ const advanceSchema = mongoose.Schema({
         min: [1, "Amount must be greater than 0"]
     },
 
-    note: {
+    reason: {
         type: String,
         maxLenght: 200
     },

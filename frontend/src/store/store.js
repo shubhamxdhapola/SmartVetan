@@ -4,6 +4,7 @@ import dashboardSlice from './slices/dashboard.slice.js'
 import paginationSlice from './slices/pagination.slice.js'
 import employeeSlice from './slices/employee.slice.js'
 import uploadSlice from './slices/upload.slice.js'
+import advanceSlice from './slices/advance.slice.js'
 
 const store = configureStore({
     reducer: {
@@ -11,7 +12,8 @@ const store = configureStore({
         dashboard: dashboardSlice,
         pagination: paginationSlice,
         employee: employeeSlice,
-        upload : uploadSlice,
+        upload: uploadSlice,
+        advance: advanceSlice,
     }
 })
 

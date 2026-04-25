@@ -76,6 +76,20 @@ export const googleSignin = createAsyncThunk(
     }
 )
 
+export const updateProfile = createAsyncThunk(
+    'auth/update-profile',
+    async (profileData, { rejectWithValue }) => {
+        try {
+            const response = await axiosInstance.put(
+                API_PATHS.AUTH.UPDATE_PROFILE, profileData
+            )
+            return response?.data
+        } catch (error) {
+            return rejectWithValue(error?.response?.data)
+        }
+    }
+)
+
 const authSlice = createSlice({
     name: 'auth',
     initialState: {
@@ -109,21 +123,10 @@ const authSlice = createSlice({
                 state.error = action.payload
                 state.loading = false
             })
-            .addCase(googleSignin.pending, (state) => {
-                state.authenticating = true
-            })
-            .addCase(googleSignin.fulfilled, (state, action) => {
-                state.authenticating = false
-                state.employer = action.payload?.employer
-            })
-            .addCase(googleSignin.rejected, (state, action) => {
-                state.error = action.payload
-                state.authenticating = false
-            })
             .addCase(logoutEmployer.pending, (state) => {
                 state.loading = true
             })
-            .addCase(logoutEmployer.fulfilled, (state, action) => {
+            .addCase(logoutEmployer.fulfilled, (state) => {
                 state.loading = false
                 state.employer = null
             })
@@ -138,9 +141,33 @@ const authSlice = createSlice({
                 state.authenticating = false
                 state.employer = action.payload
             })
-            .addCase(getEmployerInfo.rejected, (state, action) => {
-                state.error = action.payload
+            .addCase(getEmployerInfo.rejected, (state) => {
                 state.authenticating = false
+                state.employer = null
+            })
+            .addCase(googleSignin.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(googleSignin.fulfilled, (state, action) => {
+                state.loading = false
+                state.employer = action?.payload?.employer
+            })
+            .addCase(googleSignin.rejected, (state, action) => {
+                state.error = action.payload
+                state.loading = false
+            })
+            .addCase(updateProfile.pending, (state) => {
+                state.loading = true
+            })
+            .addCase(updateProfile.fulfilled, (state, action) => {
+                state.loading = false
+                if (action.payload?.employer) {
+                    state.employer = action.payload.employer
+                }
+            })
+            .addCase(updateProfile.rejected, (state, action) => {
+                state.error = action.payload
+                state.loading = false
             })
     }
 })

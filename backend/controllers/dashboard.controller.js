@@ -1,5 +1,5 @@
 import Employee from "../models/employee.model.js";
-import { getRecentAdvances, getStatsByMonth } from "../utils/helper.js";
+import { getRecentAdvances, getStatsByMonth, getDailyAdvancesForMonth } from "../utils/helper.js";
 
 export const getDashboardData = async (req, res) => {
     try {
@@ -17,7 +17,8 @@ export const getDashboardData = async (req, res) => {
             currentMonthStats,
             prevMonthStats,
             crrMnthTotalSal,
-            recentAdvances
+            recentAdvances,
+            dailyAdvances
         ] = await Promise.all([
             getStatsByMonth(currentMonth, employerId),
             getStatsByMonth(previousMonth, employerId),
@@ -30,7 +31,8 @@ export const getDashboardData = async (req, res) => {
                     }
                 }
             ]),
-            getRecentAdvances(employerId)
+            getRecentAdvances(employerId),
+            getDailyAdvancesForMonth(currentMonth, employerId)
         ]);
 
 
@@ -39,6 +41,7 @@ export const getDashboardData = async (req, res) => {
         return res.status(200).json({
             recentAdvances,
             prevMonthStats,
+            dailyAdvances,
             currentMonthStats: { ...currentMonthStats, totalSalary },
         });
     } catch (error) {

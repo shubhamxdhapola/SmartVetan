@@ -1,5 +1,6 @@
 import React from "react";
 import CurrentMonthStats from "./components/CurrentMonthStats";
+import DailyAdvancesChart from "./components/DailyAdvancesChart";
 import HistoricalData from "./components/HistoricalData";
 import RecentAcitivity from "./components/RecentAcitivity";
 import BottomNavBar from "./components/BottomNavBar";
@@ -17,6 +18,7 @@ const Dashboard = () => {
   return (
     <DashboardLayout activeMenu="Dashboard">
       <CurrentMonthStats />
+      <DailyAdvancesChart />
       <HistoricalData />
       <RecentAcitivity />
     </DashboardLayout>

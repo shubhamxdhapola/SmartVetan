@@ -1,27 +1,35 @@
+import { useSelector } from "react-redux";
 import { FaRegCheckCircle, FaUsers } from "react-icons/fa";
 import { IoMdCloseCircleOutline } from "react-icons/io";
 
 const StatsOverview = () => {
+  const { employees } = useSelector((state) => state.employee);
+
+  const totalEmployees = employees?.length || 0;
+  const activeEmployees = employees?.filter((emp) => emp.isActive !== false).length || 0;
+  const inactiveEmployees = employees?.filter((emp) => emp.isActive === false).length || 0;
+
   const STATS_DATA = [
     {
       label: "Total Employees",
       Icon: FaUsers,
-      value: 142,
+      value: totalEmployees,
       style: "bg-primary/10 text-primary",
     },
     {
       label: "Active Employees",
       Icon: FaRegCheckCircle,
-      value: 128,
+      value: activeEmployees,
       style: "bg-tertiary/10 text-tertiary",
     },
     {
       label: "Inactive Employees",
       Icon: IoMdCloseCircleOutline,
-      value: 14,
+      value: inactiveEmployees,
       style: "text-error bg-error/10",
     },
   ];
+
   return (
     <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
       {STATS_DATA.map(({ label, Icon, value, style }, index) => (

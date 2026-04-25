@@ -5,6 +5,19 @@ import dayjs from "dayjs";
 
 const SalaryHistory = () => {
   const { salaryHistory } = useSelector((state) => state.employee);
+
+  if (!salaryHistory || salaryHistory.length === 0) {
+    return (
+      <div className="p-8 text-center bg-surface-container/50 border border-outline-variant/10 rounded-xl my-4 mx-8">
+        <span className="material-symbols-outlined text-4xl text-on-surface-variant/40 mb-3" style={{ fontVariationSettings: "'FILL' 1" }}>
+          receipt_long
+        </span>
+        <h3 className="text-on-surface font-bold text-lg">No Salary History</h3>
+        <p className="text-on-surface-variant text-sm mt-1">This employee hasn't received any salary payments yet.</p>
+      </div>
+    );
+  }
+
   return (
     <div className="p-8">
       <div className="overflow-x-auto">
