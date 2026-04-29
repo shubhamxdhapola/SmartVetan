@@ -16,33 +16,18 @@ export const getDashboardData = async (req, res) => {
         const [
             currentMonthStats,
             prevMonthStats,
-            crrMnthTotalSal,
             recentAdvances,
             dailyAdvances
         ] = await Promise.all([
             getStatsByMonth(currentMonth, employerId),
             getStatsByMonth(previousMonth, employerId),
-            Employee.aggregate([
-                { $match: { employerId } },
-                {
-                    $group: {
-                        _id: null,
-                        totalSalary: { $sum: "$salary" }
-                    }
-                }
-            ]),
             getRecentAdvances(employerId),
             getDailyAdvancesForMonth(currentMonth, employerId)
-        ]);
-
-
-        const totalSalary = crrMnthTotalSal[0]?.totalSalary || {};
-
-        return res.status(200).json({
+        ]);        return res.status(200).json({
             recentAdvances,
             prevMonthStats,
             dailyAdvances,
-            currentMonthStats: { ...currentMonthStats, totalSalary },
+            currentMonthStats,
         });
     } catch (error) {
         console.error("Error in getDashboardData controller:", error);

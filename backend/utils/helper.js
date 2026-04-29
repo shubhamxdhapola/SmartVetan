@@ -26,15 +26,24 @@ export const getStatsByMonth = async (month, employerId) => {
     const start = new Date(Date.UTC(year, monthNumber - 1, 1));
     const end = new Date(Date.UTC(year, monthNumber, 1));
 
-    const [employees, advances, salaryRecord] = await Promise.all([
-        Employee.countDocuments({ employerId }),
+    const [employeeStats, advances, salaryRecord] = await Promise.all([
+        Employee.aggregate([
+            { $match: { employerId } },
+            {
+                $group: {
+                    _id: null,
+                    count: { $sum: 1 },
+                    totalSalary: { $sum: "$salary" }
+                }
+            }
+        ]),
         getTotalAdvance(start, end, employerId),
         SalaryRecord.aggregate([
             { $match: { employerId, month } },
             {
                 $group: {
                     _id: null,
-                    totalSalary: { $sum: "$totalSalary" },
+                    totalSalary: { $sum: "$baseSalary" },
                     finalPayable: { $sum: "$finalPayable" },
                     paidAmount: { $sum: { $cond: [{ $eq: ["$status", "Paid"] }, "$finalPayable", 0] } },
                     pendingAmount: { $sum: { $cond: [{ $eq: ["$status", "Pending"] }, "$finalPayable", 0] } },
@@ -45,13 +54,24 @@ export const getStatsByMonth = async (month, employerId) => {
         ])
     ]);
     const stats = salaryRecord[0] || {};
+    const employees = employeeStats[0]?.count || 0;
+
+    const now = new Date();
+    const currentMonthStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+
+    const totalSalary = month === currentMonthStr
+        ? (employeeStats[0]?.totalSalary || 0)
+        : (stats.totalSalary || 0);
+
+    const advance = advances[0]?.totalAdvance || 0;
+    const payable = totalSalary - advance;
 
     return {
         month,
         employees,
-        advance: advances[0]?.totalAdvance || 0,
-        totalSalary: stats.totalSalary || 0,
-        payable: stats.finalPayable || 0,
+        advance,
+        totalSalary,
+        payable,
         paidAmount: stats.paidAmount || 0,
         pendingAmount: stats.pendingAmount || 0,
         paidStaff: stats.paidStaff || 0,

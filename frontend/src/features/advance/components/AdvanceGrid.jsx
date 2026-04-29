@@ -15,22 +15,30 @@ import { setSelectedMonth, deleteAdvance, getAdvanceStats } from "../../../store
  * Returns newest first: [{ value: 'YYYY-MM', label: 'Apr 2026' }, ...]
  */
 const generateMonthOptions = (joiningDateISO) => {
+
   const options = [];
-  const start = joiningDateISO ? new Date(joiningDateISO) : new Date();
+
+  const start = new Date(joiningDateISO);
+  const today = new Date();
+
   start.setDate(1);
 
-  const now = new Date();
-  // Include the current month (unlike the dashboard which stops at prev month)
-  const end = new Date(now.getFullYear(), now.getMonth(), 1);
+  const end = new Date(today.getFullYear(), today.getMonth() + 1, 1);
 
-  const cursor = new Date(end);
-  while (cursor >= start) {
-    const value = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, "0")}`;
-    const label = cursor.toLocaleString("en-US", { month: "short", year: "numeric" });
-    options.push({ value, label });
-    cursor.setMonth(cursor.getMonth() - 1);
+  while (start <= end) {
+    const label = start.toLocaleString("en-US", {
+      month: "long",
+      year: "numeric",
+    })
+    const value = `${start.getFullYear()}-${String(start.getMonth() + 1).padStart(2, "0")}`
+    options.push({ label: label, value: value });
+
+    // move to next month
+    start.setMonth(start.getMonth() + 1);
   }
-  return options;
+
+  return options.reverse()
+
 };
 
 /** Format a YYYY-MM string to a display label like "Apr 2026" */

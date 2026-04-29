@@ -76,7 +76,7 @@ export const getAdvanceStats = async (req, res) => {
             // Use actual salary from SalaryRecord for the selected month
             SalaryRecord.aggregate([
                 { $match: { employerId, month } },
-                { $group: { _id: null, totalSalary: { $sum: "$totalSalary" } } }
+                { $group: { _id: null, totalSalary: { $sum: "$baseSalary" } } }
             ]),
             // Fallback: current employee salaries (used when no salary records exist yet)
             Employee.aggregate([
@@ -88,10 +88,14 @@ export const getAdvanceStats = async (req, res) => {
         const totalAdvance = advanceAgg[0]?.totalAdvance || 0;
         const employeesWithAdvance = advanceAgg[0]?.employeesWithAdvance || 0;
 
-        // Prefer SalaryRecord-based salary (actual historical figure),
-        // fall back to current employee salary sum if payroll hasn't been run yet
-        const totalSalary =
-            salaryRecordAgg[0]?.totalSalary ?? currentSalaryAgg[0]?.totalSalary ?? 0;
+        // For current month, use dynamic sum of active employee salaries.
+        // For previous months, use recorded salaries from SalaryRecord.
+        const now = new Date();
+        const currentMonthStr = `${now.getUTCFullYear()}-${String(now.getUTCMonth() + 1).padStart(2, "0")}`;
+
+        const totalSalary = month === currentMonthStr
+            ? (currentSalaryAgg[0]?.totalSalary || 0)
+            : (salaryRecordAgg[0]?.totalSalary || 0);
 
         const totalSalaryToBePaid = totalSalary - totalAdvance;
 

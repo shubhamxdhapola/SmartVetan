@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 const salaryRecordSchema = mongoose.Schema({
-    
+
     employeeId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Employee",
@@ -17,7 +17,7 @@ const salaryRecordSchema = mongoose.Schema({
         required: true,
     },
 
-    totalSalary: {
+    baseSalary: {
         type: Number,
         required: true,
     },
@@ -34,11 +34,11 @@ const salaryRecordSchema = mongoose.Schema({
 
     status: {
         type: String,
-        enum : ['Pending', 'Paid'],
+        enum: ['Pending', 'Paid'],
         default: "Pending"
     },
-    
-    paidDate : Date 
+
+    paidDate: Date
 
 }, { timestamps: true })
 

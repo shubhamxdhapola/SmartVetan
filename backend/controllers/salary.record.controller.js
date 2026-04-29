@@ -70,16 +70,16 @@ export const generateSalary = async (req, res) => {
             }
         ])
 
-        const totalSalary = employee.salary;
+        const baseSalary = employee.salary;
 
         const totalAdvance = result.length > 0
             ? result[0].totalAdvance
             : 0;
 
-        const finalPayable = totalSalary - totalAdvance;
+        const finalPayable = baseSalary - totalAdvance;
 
         const salaryRecord = await SalaryRecord.create({
-            employeeId, employerId, month, totalSalary, totalAdvance, finalPayable,
+            employeeId, employerId, month, baseSalary, totalAdvance, finalPayable,
         })
 
         return res.status(201).json({

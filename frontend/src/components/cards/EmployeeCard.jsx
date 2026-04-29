@@ -52,8 +52,8 @@ export default function EmployeeCard({ employee }) {
 
           {/* Status Indicator Dot */}
           <div className={`absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full border-2 border-surface z-10 ${employee.isActive !== false
-              ? 'bg-green-400'
-              : 'bg-error'
+            ? 'bg-green-400'
+            : 'bg-error'
             }`}></div>
 
           {/* Custom Bottom-Right Badge */}
@@ -84,6 +84,7 @@ export default function EmployeeCard({ employee }) {
             <h3 className="text-lg font-bold text-on-surface leading-tight">
               {employee.name}
             </h3>
+
             <p className={`text-sm leading-snug ${roleTextClass}`}>
               {employee.designation}
             </p>
